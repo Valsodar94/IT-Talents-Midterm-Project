@@ -1,45 +1,50 @@
 package userStuff;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
-import enums.Cities;
-import exceptions.IncorrectPasswordException;
-import exceptions.InvalidEmailException;
-import exceptions.InvalidPasswordException;
-import exceptions.InvalidPhoneNumberException;
-import exceptions.InvalidRegistrationException;
+import exceptions.InvalidInformationException;
+import places.City;
+import places.Place;
+import services.Comment;
+import services.Reservation;
+import website.Website;
 
 public class User {
 	private String firstName;
 	private String lastName;
-	private Cities city;
+	private City city;
 	private String emailAdress;
 	private String password;
 	private String phoneNumber;
 	private LocalDate birthday;
-//	private List<Reservation> myReservations;
-//	private List<Zavedenie> lybimiZavedeniq;
-//	private List<Zavedenie> dnevnikZaZavedeniq;
-//	private List<Comment> comments;
-//	private List<Zavedenie> pastReservations;
 	
-	private User(String firstName, String lastName, Cities city, String emailAdress, String password, String phoneNumber, LocalDate birthday) {
+	private List<Reservation> myReservations;
+	private List<Place> favouritePlaces;
+	private List<Place> placesJournal;
+	private List<Comment> comments;
+	private List<Reservation> pastReservations;
+	
+	private User(String firstName, String lastName, City city, String emailAdress, String password, String phoneNumber, LocalDate birthday) {
 		this.firstName=firstName;
 		this.lastName=lastName;
 		this.city = city;
 		this.emailAdress = emailAdress;
 		this.password = password;
 		this.birthday=birthday;
-//		this.myReservations = new ArrayList<>();
-//		this.lybimiZavedeniq = new ArrayList<>();
-//		this.dnevnikZaZavedeniq = new ArrayList<>();
-//		this.comments = new ArrayList<>();
-//		this.pastReservations = new ArrayList<>();
+		this.myReservations = new ArrayList<>();
+		this.favouritePlaces = new ArrayList<>();
+		this.placesJournal = new ArrayList<>();
+		this.comments = new ArrayList<>();
+		this.pastReservations = new ArrayList<>();
 	}
-	public static User register(String firstName, String lastName, Cities city, String emailAdress, String password, String phoneNumber, LocalDate birthday) throws InvalidRegistrationException{
+
+	
+	
+	public static User register(String firstName, String lastName, City city, String emailAdress, String password, String phoneNumber, LocalDate birthday, Website w) throws InvalidInformationException{
 		if(checkForValidString(firstName)) {
 			if(checkForValidString(lastName)) {
 				if(city!=null) {
@@ -47,33 +52,53 @@ public class User {
 						if(checkForValidEMail(emailAdress)) {
 							if(checkForValidPassword(password)) {
 								if(checkForValidPhoneNumber(phoneNumber)) {
-									if(birthday!=null)
-										return new User(firstName,lastName,city,emailAdress,password,phoneNumber,birthday);
+									if(birthday!=null) {
+										System.out.println("Registration sucessfull!");
+										User u = new User(firstName,lastName,city,emailAdress,password,phoneNumber,birthday);
+										w.addUser(u);
+										return u;
+									}
 									else
-										throw new InvalidRegistrationException("Neuspeshna registraciq.Podavash null za birthday..");
+										throw new InvalidInformationException("Neuspeshna registraciq.Podavash null za birthday..");
 								}
 							}
 						}
-					} catch (InvalidEmailException | InvalidPasswordException | InvalidPhoneNumberException e) {
+					} catch (InvalidInformationException e) {
 						System.out.println("Neuspeshna registraciq! Prichina: " + e.getMessage());
 					}
 				} else 
-					throw new InvalidRegistrationException("Neuspeshna registraciq.Podavash null za city..");
+					throw new InvalidInformationException("Neuspeshna registraciq.Podavash null za city..");
 			}	
 		} else 
-			throw new InvalidRegistrationException("Neuspeshna registraciq!!!");
+			throw new InvalidInformationException("Neuspeshna registraciq!!!");
 		return null;
+	} 
+	
+	
+	public void refreshPresentAndPastReservations() {
+		LocalDateTime now = LocalDateTime.now();
+		Iterator<Reservation> it = myReservations.iterator();
+		while(it.hasNext()) {
+			Reservation r = it.next();
+			if(r.getDateAndTime().isBefore(now)) {
+				pastReservations.add(r);
+				it.remove();
+			}
+		}
 	}
+	
 	public void changePassword(String newPassword,String oldPassword) {
 		try {
 			if(checkForPasswordMatch(oldPassword)) {
 				if(checkForValidPassword(newPassword)) 
 					this.password=newPassword;
 			}
-		} catch (IncorrectPasswordException | InvalidPasswordException e) {
+		} catch (InvalidInformationException e) {
 			System.out.println("The password was not changed! Reason: " + e.getMessage());
 		}
 	}
+	
+	
 
 	public void changeEMail(String oldPassword, String newEMail) {
 		try {
@@ -81,7 +106,7 @@ public class User {
 				if(checkForValidEMail(newEMail))
 					this.emailAdress=newEMail;
 			}
-		} catch (IncorrectPasswordException | InvalidEmailException e) {
+		} catch (InvalidInformationException e) {
 			System.out.println("The email was not changed! Reason: " + e.getMessage());
 
 		}
@@ -93,7 +118,7 @@ public class User {
 					this.firstName = firstName;
 				}
 			}
-		} catch (IncorrectPasswordException e) {
+		} catch (InvalidInformationException e) {
 			System.out.println("The name was not changed! Reason: " + e.getMessage());
 		}
 	}
@@ -104,18 +129,18 @@ public class User {
 					this.firstName = lastName;
 				}
 			}
-		} catch (IncorrectPasswordException e) {
+		} catch (InvalidInformationException e) {
 			System.out.println("The last name was not changed! Reason: " + e.getMessage());
 		}
 	}
-	public void changeCity(String password,Cities newCity) {
+	public void changeCity(String password,City newCity) {
 		try {
 			if(checkForPasswordMatch(password)) {
 				if(newCity!=null) {
 					this.city = newCity;
 				}
 			}
-		} catch (IncorrectPasswordException e) {
+		} catch (InvalidInformationException e) {
 			System.out.println("The city was not changed! Reason: " + e.getMessage());
 		}
 	}
@@ -124,7 +149,7 @@ public class User {
 			if(checkForPasswordMatch(password))
 				if(checkForValidPhoneNumber(phoneNumber))
 					this.phoneNumber=phoneNumber;
-		} catch (IncorrectPasswordException | InvalidPhoneNumberException e) {
+		} catch (InvalidInformationException e) {
 			System.out.println("The mobile number was not changed! Reason: " + e.getMessage());
 
 		}
@@ -136,44 +161,48 @@ public class User {
 					this.birthday = birthday;
 				}
 			}
-		} catch (IncorrectPasswordException e) {
+		} catch (InvalidInformationException e) {
 			System.out.println("The birthday was not changed! Reason: " + e.getMessage());
 		}
 	}
-//	public void addReservation(Reservation r) {
-//		if(r!=null) {
-//			this.myReservations.add(r);
-//		}
-//	}
-//	public void addLubimoZavedenie(Zavedenie z) {
-//		if(z!=null) {
-//			this.lybimiZavedeniq.add(z);
-//		}
-//	}
-//	public void removeLubimoZavedenie(Zavedenie z) {
-//		if(z!=null) {
-//			if(this.lybimiZavedeniq.contains(z)) {
-//				this.lybimiZavedeniq.remove(z);
-//			}
-//		}
-//	}
+	public void addAPlaceInJournal(Place p) {
+		if(p!=null)
+			this.placesJournal.add(p);
+	}
+	public void addReservation(Reservation r) {
+		if(r!=null) {
+			this.myReservations.add(r);
+		}
+	}
+	public void addLubimoZavedenie(Place fav) {
+		if(fav!=null) {
+			this.favouritePlaces.add(fav);
+		}
+	}
+	public void removeLubimoZavedenie(Place fav) {
+		if(fav!=null) {
+			if(this.favouritePlaces.contains(fav)) {
+				this.favouritePlaces.remove(fav);
+			}
+		}
+	}
 	
 	
 	
 	
-	private static boolean  checkForValidPhoneNumber(String phoneNumber) throws InvalidPhoneNumberException{
+	private static boolean  checkForValidPhoneNumber(String phoneNumber) throws InvalidInformationException{
 		if(phoneNumber!=null) {
 			if(phoneNumber.trim().length()==10) {
 				for(int i=0;i<phoneNumber.length();i++) {
 					if(!(Character.isDigit(i))) 
-						throw new InvalidPhoneNumberException("Nomera trqbva da se systoi samo ot cifri!");
+						throw new InvalidInformationException("Nomera trqbva da se systoi samo ot cifri!");
 					else 
 						return true;
 				}
 			} else 
-				throw new InvalidPhoneNumberException("Nomera trqbva da sydyrza tochno 10 cifri!");
+				throw new InvalidInformationException("Nomera trqbva da sydyrza tochno 10 cifri!");
 		} else 
-			throw new InvalidPhoneNumberException("Podavash null za phonenumber");
+			throw new InvalidInformationException("Podavash null za phonenumber");
 		return false;
 	}
 
@@ -183,39 +212,39 @@ public class User {
 		return false;
 	}
 
-	private static boolean checkForValidEMail(String eMail) throws InvalidEmailException{
+	private static boolean checkForValidEMail(String eMail) throws InvalidInformationException{
 		if(eMail!=null) {
 			if(eMail.trim().length()>10) {
 				if(eMail.contains("@"))
 					return true;
 				else
-					throw new InvalidEmailException("Email-a ti e nevaliden! Ne sydyrzha @");
+					throw new InvalidInformationException("Email-a ti e nevaliden! Ne sydyrzha @");
 			} else 
-				throw new InvalidEmailException("Nevaliden email!");
+				throw new InvalidInformationException("Nevaliden email!");
 		} else
-			throw new InvalidEmailException("Podavash mi null za email...");
+			throw new InvalidInformationException("Podavash mi null za email...");
 	}
 
-	private boolean checkForPasswordMatch(String password) throws IncorrectPasswordException{
+	private boolean checkForPasswordMatch(String password) throws InvalidInformationException{
 		if(password!=null) {
 			if(password.equals(this.password))
 				return true;
 			else
-				throw new IncorrectPasswordException("Parolite ne syvpadat!!");
+				throw new InvalidInformationException("Parolite ne syvpadat!!");
 		} else {
-			throw new IncorrectPasswordException("Podavash null za parola..");
+			throw new InvalidInformationException("Podavash null za parola..");
 		}
 	}
 
 
-	private static boolean checkForValidPassword (String password) throws InvalidPasswordException {
+	private static boolean checkForValidPassword (String password) throws InvalidInformationException {
 		if(password!=null) {
 			if(password.trim().length()>5) 
 				return true;
 			else 
-				throw new InvalidPasswordException("Dylzhinata na parolata trqbva da e pone 5 znaka");
+				throw new InvalidInformationException("Dylzhinata na parolata trqbva da e pone 5 znaka");
 		} else 
-			throw new InvalidPasswordException("Podavash null za parola..");
+			throw new InvalidInformationException("Podavash null za parola..");
 	}
 	
 
@@ -232,10 +261,10 @@ public class User {
 	private void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public Cities getCity() {
+	public City getCity() {
 		return city;
 	}
-	private void setCity(Cities city) {
+	private void setCity(City city) {
 		this.city = city;
 	}
 	public String getEmailAdress() {
@@ -250,25 +279,28 @@ public class User {
 	public LocalDate getBirthday() {
 		return birthday;
 	}
+	public String getPassword() {
+		return this.password;
+	}
 	
-//	public List<Reservation> getMyReservations() {
-//		return Collections.unmodifiableList(this.myReservations);
-//	}
-//	
-//	public List<Zavedenie> getLybimiZavedeniq() {
-//		return Collections.unmodifiableList(this.lybimiZavedeniq);
-//	}
-//	
-//	public List<Zavedenie> getDnevnikZaZavedeniq() {
-//		return Collections.unmodifiableList(this.dnevnikZaZavedeniq);
-//	}
-//	
-//	public List<Comment> getComments() {
-//		return Collections.unmodifiableList(this.comments);
-//	}
-//
-//	public List<Zavedenie> getPastReservations() {
-//		return Collections.unmodifiableList(this.pastReservations);
-//	}
+	public List<Reservation> getMyReservations() {
+		return Collections.unmodifiableList(this.myReservations);
+	}
+	
+	public List<Place> getLybimiZavedeniq() {
+		return Collections.unmodifiableList(this.favouritePlaces);
+	}
+	
+	public List<Place> getDnevnikZaZavedeniq() {
+		return Collections.unmodifiableList(this.placesJournal);
+	}
+	
+	public List<Comment> getComments() {
+		return Collections.unmodifiableList(this.comments);
+	}
+
+	public List<Reservation> getPastReservations() {
+		return Collections.unmodifiableList(this.pastReservations);
+	}
 	
 }

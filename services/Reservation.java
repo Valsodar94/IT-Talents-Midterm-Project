@@ -1,36 +1,35 @@
 package services;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import places.Place;
 import userStuff.User;
-
+//changed LocalDate to LocalDateTime and removed hour
 public class Reservation {
-	private LocalDate date;
+	private LocalDateTime dateAndTimeOfReservation;
 	private int numberOfPeople;
 	private int numberOfChildren;
-	private int hour;
 	private String location;
 	private int discount;
 	private String extraOptions;
 	private final User user;
 	private final Place place;
 	
-	public Reservation(LocalDate date, int numberOfPeople, int hour, String location, int discount, User user, Place place) {
-		this.date = date;
+	
+
+	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, String location, int discount, User user, Place place) {
+		this.dateAndTimeOfReservation = dateAndTimeOfReservation;
 		this.numberOfPeople = numberOfPeople;
-		this.hour = hour;
 		this.location = location;
 		this.discount = discount;
 		this.user = user;
 		this.place = place;
 	}
 
-	public Reservation(LocalDate date, int numberOfPeople, int hour, String location, int discount, String extraOptions, User user,
+	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, String location, int discount, String extraOptions, User user,
 			Place place) {
-		this.date = date;
+		this.dateAndTimeOfReservation = dateAndTimeOfReservation;
 		this.numberOfPeople = numberOfPeople;
-		this.hour = hour;
 		this.location = location;
 		this.discount = discount;
 		this.extraOptions = extraOptions;
@@ -38,24 +37,22 @@ public class Reservation {
 		this.place = place;
 	}
 
-	public Reservation(LocalDate date, int numberOfPeople, int numberOfChildren, int hour, String location, int discount,
+	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren, String location, int discount,
 			User user, Place place) {
-		this.date = date;
+		this.dateAndTimeOfReservation = dateAndTimeOfReservation;
 		this.numberOfPeople = numberOfPeople;
 		this.numberOfChildren = numberOfChildren;
-		this.hour = hour;
 		this.location = location;
 		this.discount = discount;
 		this.user = user;
 		this.place = place;
 	}
 
-	public Reservation(LocalDate date, int numberOfPeople, int numberOfChildren, int hour, String location, int discount,
+	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren, String location, int discount,
 			String extraOptions, User user, Place place) {
-		this.date = date;
+		this.dateAndTimeOfReservation = dateAndTimeOfReservation;
 		this.numberOfPeople = numberOfPeople;
 		this.numberOfChildren = numberOfChildren;
-		this.hour = hour;
 		this.location = location;
 		this.discount = discount;
 		this.extraOptions = extraOptions;
@@ -67,8 +64,8 @@ public class Reservation {
 	
 	//getters and setters
 
-	public LocalDate getDate() {
-		return date;
+	public LocalDateTime getDateAndTime() {
+		return dateAndTimeOfReservation;
 	}
 
 	public int getNumberOfPeople() {
@@ -87,13 +84,6 @@ public class Reservation {
 		this.numberOfChildren = numberOfChildren;
 	}
 
-	public int getHour() {
-		return hour;
-	}
-
-	public void setHour(int hour) {
-		this.hour = hour;
-	}
 
 	public String getLocation() {
 		return location;
