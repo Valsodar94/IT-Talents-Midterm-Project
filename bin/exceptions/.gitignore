@@ -1,0 +1,6 @@
+/IncorrectPasswordException.class
+/InvalidEmailException.class
+/InvalidPasswordException.class
+/InvalidPhoneNumberException.class
+/InvalidRegistrationException.class
+/InvalidInformationException.class
