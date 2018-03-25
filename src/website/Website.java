@@ -26,10 +26,10 @@ public class Website {
 	
 	public Website() {
 		allUsers = new ArrayList<>();
-		allRestaurants = new TreeSet<>();
-		allClubs = new TreeSet<>();
-		allEvents = new TreeSet<>();
-		allOffers = new TreeSet<>();
+//		allRestaurants = new TreeSet<>();
+//		allClubs = new TreeSet<>();
+//		allEvents = new TreeSet<>();
+//		allOffers = new TreeSet<>();
 	}
 
 	public Website(String infoForTheWebstie) {

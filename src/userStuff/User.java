@@ -188,8 +188,6 @@ public class User {
 	}
 	
 	
-	
-	
 	private static boolean  checkForValidPhoneNumber(String phoneNumber) throws InvalidInformationException{
 		if(phoneNumber!=null) {
 			if(phoneNumber.trim().length()==10) {
@@ -212,7 +210,7 @@ public class User {
 		return false;
 	}
 
-	private static boolean checkForValidEMail(String eMail) throws InvalidInformationException{
+	public static boolean checkForValidEMail(String eMail) throws InvalidInformationException{
 		if(eMail!=null) {
 			if(eMail.trim().length()>10) {
 				if(eMail.contains("@"))
@@ -235,7 +233,6 @@ public class User {
 			throw new InvalidInformationException("Podavash null za parola..");
 		}
 	}
-
 
 	private static boolean checkForValidPassword (String password) throws InvalidInformationException {
 		if(password!=null) {

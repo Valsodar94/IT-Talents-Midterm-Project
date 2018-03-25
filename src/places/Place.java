@@ -1,20 +1,26 @@
 package places;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import exceptions.InvalidInformationException;
 import services.Comment;
 import services.Reservation;
+import userStuff.User;
 
 public class Place {
 	private String name;
 	private String address;
 	private String emailAddress;
-	private final LocalDate dateOfRegistration;
-	private final LocalTime timeOfRegistration;
+	private final LocalDateTime dateAndTimeOfRegistration;
 	private int avgRating;
+	// for restaurant - true, for club - false
+	private boolean isRestaurant;
+	// kitchen for restaurant, music for club
+	private String characteristicOfPlace;
 	private String city;
 	private String region;
 	private String avgCost;
@@ -24,26 +30,40 @@ public class Place {
 	private String extras;
 	private String workingTime;
 	private int capacity;
-	private List<Reservation> reservations;
+
+	private Map<LocalDateTime, Reservation> reservations;
 	private List<Comment> comments;
 	private List<Integer> ratings;
 
-	public Place(String name, String address, String emailAddress, String city, String region, String avgCost,
-			String workingTime) throws InvalidInformationException {
+	public Place(String name, String address, String emailAddress, boolean isRestaurant, String characteristicOfPlace,
+			String city, String region, String avgCost, String workingTime) throws InvalidInformationException {
 		setName(name);
 		setAddress(address);
 		setEmailAddress(emailAddress);
+		this.isRestaurant = isRestaurant;
+		setCharacteristicOfPlace(characteristicOfPlace);
 		setCity(city);
 		setRegion(region);
-		dateOfRegistration = LocalDate.now();
-		timeOfRegistration = LocalTime.now();
+		dateAndTimeOfRegistration = LocalDateTime.now();
 		setAvgCost(avgCost);
 		setWorkingTime(workingTime);
 
-		reservations = new ArrayList<Reservation>();
+		reservations = new TreeMap<LocalDateTime, Reservation>();
 		comments = new ArrayList<Comment>();
 		ratings = new ArrayList<Integer>();
 
+	}
+
+	public boolean hasAvailableSeats(int number) throws InvalidInformationException {
+		if (number > 0) {
+			if (this.capacity > number) {
+				return true;
+			}else {
+				return false;
+			}
+		}else {
+			throw new InvalidInformationException("Invalid number of people!");
+		}
 	}
 
 	public static boolean isValidString(String string) {
@@ -71,7 +91,24 @@ public class Place {
 		return sum / rateCount;
 	}
 
+	
 	// getters and setters
+	public boolean isRestaurant() {
+		return isRestaurant;
+	}
+
+	public String getCharacteristicOfPlace() {
+		return characteristicOfPlace;
+	}
+
+	public void setCharacteristicOfPlace(String characteristicOfPlace) throws InvalidInformationException {
+		if (isValidString(characteristicOfPlace)) {
+			this.characteristicOfPlace = characteristicOfPlace;
+		} else {
+			throw new InvalidInformationException("Please enter valid characteristic of the place");
+		}
+	}
+
 	private void setCity(String city) throws InvalidInformationException {
 		if (Place.isValidString(city)) {
 			this.city = city;
@@ -83,6 +120,10 @@ public class Place {
 
 	public String getCity() {
 		return city;
+	}
+
+	public String getRegion() {
+		return region;
 	}
 
 	private void setRegion(String region) throws InvalidInformationException {
@@ -123,10 +164,10 @@ public class Place {
 	}
 
 	public void setEmailAddress(String emailAddress) throws InvalidInformationException {
-		if (Place.isValidString(emailAddress)) {
+		if (User.checkForValidEMail(emailAddress)) {
 			this.emailAddress = emailAddress;
 		} else {
-			throw new InvalidInformationException("Please, enter a valid e-mail address!");
+			throw new InvalidInformationException("E-mail address is not correct!");
 		}
 	}
 
@@ -216,6 +257,10 @@ public class Place {
 		} else {
 			throw new InvalidInformationException("Please, enter valid capacity of place!");
 		}
+	}
+
+	public LocalDateTime getDateAndTimeOfRegistration() {
+		return dateAndTimeOfRegistration;
 	}
 
 }
