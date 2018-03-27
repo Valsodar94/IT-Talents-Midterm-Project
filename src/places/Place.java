@@ -10,6 +10,7 @@ import exceptions.InvalidInformationException;
 import services.Comment;
 import services.Reservation;
 import userStuff.User;
+import userStuff.UserAdministration;
 
 public class Place {
 	private String name;
@@ -162,9 +163,9 @@ public class Place {
 	public String getEmailAddress() {
 		return emailAddress;
 	}
-
+// Trqbva nova validaciq za email, tazi v clasa userAdministration e prispobena za user
 	public void setEmailAddress(String emailAddress) throws InvalidInformationException {
-		if (User.checkForValidEMail(emailAddress)) {
+		if (UserAdministration.checkForValidEMail(emailAddress)) {
 			this.emailAddress = emailAddress;
 		} else {
 			throw new InvalidInformationException("E-mail address is not correct!");

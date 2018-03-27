@@ -10,14 +10,27 @@ public class Event {
 	private String title;
 	private String description;
 	private LocalDate date;
-
-	public Event(String title, String description, LocalDate date) throws InvalidInformationException, InvalidDateException {
+	private Place place;
+	public Event(String title, String description, LocalDate date, Place place) throws InvalidInformationException, InvalidDateException {
 		setTitle(title);
 		setDescription(description);
 		setDate(date);
+		setPlace(place);
 	}
 
+	
+
 	// getters and setters
+	public Place getPlace() {
+		return place;
+	}
+
+	public void setPlace(Place p) throws InvalidInformationException{
+		if(p!=null)
+			this.place = p;
+		else
+			throw new InvalidInformationException("Podavash null za place na event!");
+	}
 	public String getTitle() {
 		return title;
 	}

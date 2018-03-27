@@ -12,16 +12,31 @@ public class Offer {
 	private String termsAndConditions;
 	private LocalDate startDate;
 	private LocalDate endDate;
+	private Place place;
 
-	public Offer(String title, String description, String termsAndConditions, LocalDate startDate, LocalDate endDate) throws InvalidInformationException, InvalidDateException {
+	public Offer(String title, String description, String termsAndConditions, LocalDate startDate, LocalDate endDate, Place place) throws InvalidInformationException, InvalidDateException {
 		setTitle(title);
 		setDescription(description);
 		setTermsAndConditions(termsAndConditions);
 		setStartDate(startDate);
 		setEndDate(endDate);
+		setPlace(place);
 	}
 
+	
+
 	// getters and setters
+	public Place getPlace() {
+		return place;
+	}
+
+	public void setPlace(Place place) throws InvalidInformationException{
+		if(place!=null)
+			this.place = place;
+		else
+			throw new InvalidInformationException("Podavash null za place na oferta.");
+	}
+	
 	public String getTitle() {
 		return title;
 	}
