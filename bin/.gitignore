@@ -1,4 +1,8 @@
 
-places/City.java
-.classpath
-.classpath
+/.gitignore
+/places/
+/userStuff/
+/website/
+/enums/
+/comparators/
+/services/

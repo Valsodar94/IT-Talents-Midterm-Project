@@ -3,7 +3,6 @@ package services;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 import exceptions.InvalidDateException;
 import exceptions.InvalidInformationException;
 import places.Place;
@@ -20,10 +19,10 @@ public class Reservation {
 	private final User user;
 	private final Place place;
 	private Offer offer;
+	private Event event;
 
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, User user, Place place)
-			throws Exception {
+			String locationPref, int discount, User user, Place place) throws Exception {
 
 		this.reservationID = generateReservationID();
 		setDateAndTime(dateAndTimeOfReservation);
@@ -31,7 +30,7 @@ public class Reservation {
 		setNumberOfChildren(numberOfChildren);
 		setlocationPref(locationPref);
 		setDiscount(discount);
-		//Create new  exception!
+		// Create new exception!
 		if (user != null) {
 			this.user = user;
 		} else {
@@ -45,8 +44,7 @@ public class Reservation {
 	}
 
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, String extraOptions, User user, Place place)
-			throws Exception {
+			String locationPref, int discount, String extraOptions, User user, Place place) throws Exception {
 		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place);
 		setExtraOptions(extraOptions);
 	}
@@ -60,6 +58,27 @@ public class Reservation {
 		return s;
 	}
 
+	public void listReservationInfo() {
+		System.out.println("Reservation:");
+		System.out.println("Date: " + this.dateAndTimeOfReservation.getDayOfMonth() + "/"
+				+ this.dateAndTimeOfReservation.getMonthValue() + "/" + this.dateAndTimeOfReservation.getYear());
+		System.out.println("Adults: " + this.numberOfPeople);
+		System.out.println("Children: " + this.numberOfChildren);
+		System.out.println("Time: " + this.dateAndTimeOfReservation.getHour()+":"+this.dateAndTimeOfReservation.getMinute());
+		System.out.println("Discount: " + this.getDiscount()+"%");
+		System.out.println("Reservation number: " + this.reservationID);
+		System.out.println("Place: " + this.locationPref);
+		if(this.extraOptions != null) {
+			System.out.println("I would like to be " + this.extraOptions);
+		}
+		if(this.event != null) {
+			System.out.println("Event: " + this.event.getTitle());
+		}
+		if(this.offer != null) {
+			System.out.println("Offer: " + this.offer.getTitle());
+		}
+	}
+
 	// getters and setters
 
 	public LocalDateTime getDateAndTime() {
@@ -68,7 +87,11 @@ public class Reservation {
 
 	public void setDateAndTime(LocalDateTime dateAndTimeOfReservation) throws InvalidDateException {
 		if (dateAndTimeOfReservation != null) {
-			this.dateAndTimeOfReservation = dateAndTimeOfReservation;
+			LocalDateTime currentDateTime = LocalDateTime.now();
+			if (dateAndTimeOfReservation.isEqual(currentDateTime)
+					|| dateAndTimeOfReservation.isAfter(currentDateTime)) {
+				this.dateAndTimeOfReservation = dateAndTimeOfReservation;
+			}
 		} else {
 			throw new InvalidDateException("Invalid date or time of reservation");
 		}

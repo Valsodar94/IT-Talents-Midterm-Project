@@ -1,15 +1,15 @@
 package places;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
-
+import enums.ExtraReservationOptions;
 import exceptions.InvalidInformationException;
 import services.Comment;
 import services.Reservation;
-import userStuff.User;
 import userStuff.UserAdministration;
 
 public class Place {
@@ -29,15 +29,19 @@ public class Place {
 	private String extraOptions;
 	private String paymentMethods;
 	private String extras;
-	private String workingTime;
-	private int capacity;
+	private LocalTime startHour;
+	private LocalTime closeHour;
+	private int maxCapacity;
+	private int currentCapacity = maxCapacity;
 
-	private Map<LocalDateTime, Reservation> reservations;
+	private SortedMap<LocalDateTime, Reservation> reservations;
 	private List<Comment> comments;
 	private List<Integer> ratings;
+	private List<String> locationPrefs;
+	private List<ExtraReservationOptions> extraReservationOptions;
 
 	public Place(String name, String address, String emailAddress, boolean isRestaurant, String characteristicOfPlace,
-			String city, String region, String avgCost, String workingTime) throws InvalidInformationException {
+			String city, String region, String avgCost, LocalTime startHour, LocalTime closeHour, int maxCapacity) throws InvalidInformationException {
 		setName(name);
 		setAddress(address);
 		setEmailAddress(emailAddress);
@@ -47,17 +51,21 @@ public class Place {
 		setRegion(region);
 		dateAndTimeOfRegistration = LocalDateTime.now();
 		setAvgCost(avgCost);
-		setWorkingTime(workingTime);
+		setStartHour(startHour);
+		setCloseHour(closeHour);
+		setMaxCapacity(maxCapacity);
 
 		reservations = new TreeMap<LocalDateTime, Reservation>();
 		comments = new ArrayList<Comment>();
 		ratings = new ArrayList<Integer>();
+		locationPrefs = new ArrayList<>();
+		extraReservationOptions = new ArrayList<ExtraReservationOptions>();
 
 	}
 
 	public boolean hasAvailableSeats(int number) throws InvalidInformationException {
 		if (number > 0) {
-			if (this.capacity > number) {
+			if (this.currentCapacity > number) {
 				return true;
 			}else {
 				return false;
@@ -73,13 +81,53 @@ public class Place {
 		}
 		return false;
 	}
+	
+	public void addReservation(Reservation reservation) {
+		if(reservation!=null) {
+			this.reservations.put(reservation.getDateAndTime(), reservation); 
+		}
+	}
+	
+	public void addExtraReservationOptions(ExtraReservationOptions extraReservationOption) throws InvalidInformationException {
+		if(extraReservationOption != null) {
+			this.extraReservationOptions.add(extraReservationOption);
+		}else {
+			throw new InvalidInformationException("The option you entered is not correct!");
+		}
+	}
+	
+	public void removeExtraReservationOptions(ExtraReservationOptions extraReservationOption) throws InvalidInformationException {
+		if(extraReservationOption != null) {
+			this.extraReservationOptions.remove(extraReservationOption);
+		}else {
+			throw new InvalidInformationException("The option you entered to delete is not correct!");
+		}
+	}
+	
+	public void addLocationPref(String locationPref) throws InvalidInformationException {
+		if(locationPref != null) {
+			this.locationPrefs.add(locationPref);
+		}else {
+			throw new InvalidInformationException("The location you entered is not correct!");
+		}
+	}
 
-	public void addComment(Comment comment) {
+	public void removeLocationPref(String locationPref) throws InvalidInformationException {
+		if(locationPref != null) {
+			this.locationPrefs.remove(locationPref);
+		}else {
+			throw new InvalidInformationException("The location you entered to delete is not correct!");
+		}
+	}
+	
+	public void addComment(Comment comment) throws InvalidInformationException {
 		if (comment != null) {
 			this.comments.add(comment);
 			int rating = comment.getRating();
 			this.ratings.add(rating);
 			this.avgRating = averageRating();
+		}else {
+			throw new InvalidInformationException("The comment you entered is empty! Please, enter valid comment!");
 		}
 	}
 
@@ -236,27 +284,43 @@ public class Place {
 		}
 	}
 
-	public String getWorkingTime() {
-		return workingTime;
+	public LocalTime getStartHour() {
+		return this.startHour;
 	}
 
-	public void setWorkingTime(String workingTime) throws InvalidInformationException {
-		if (Place.isValidString(workingTime)) {
-			this.workingTime = workingTime;
+	public void setStartHour(LocalTime startHour) throws InvalidInformationException {
+		if (startHour != null) {
+			this.startHour = startHour;
 		} else {
-			throw new InvalidInformationException("Please, enter a valid working time!");
+			throw new InvalidInformationException("Please, enter a valid start hour for the working day!");
+		}
+	}
+	
+	public LocalTime getCloseHour() {
+		return this.closeHour;
+	}
+
+	public void setCloseHour(LocalTime closeHour) throws InvalidInformationException {
+		if (closeHour != null) {
+			this.closeHour = closeHour;
+		} else {
+			throw new InvalidInformationException("Please, enter a valid close hour for the working day!");
 		}
 	}
 
 	public int getCapacity() {
-		return capacity;
+		return currentCapacity;
+	}
+	
+	public int getMaxCapacity() {
+		return maxCapacity;
 	}
 
-	public void setCapacity(int capacity) throws InvalidInformationException {
-		if (capacity > 0) {
-			this.capacity = capacity;
+	public void setMaxCapacity(int maxCapacity) throws InvalidInformationException {
+		if (maxCapacity > 0) {
+			this.maxCapacity = maxCapacity;
 		} else {
-			throw new InvalidInformationException("Please, enter valid capacity of place!");
+			throw new InvalidInformationException("Please, enter valid maximum capacity of place!");
 		}
 	}
 
