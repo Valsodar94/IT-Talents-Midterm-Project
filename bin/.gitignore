@@ -1,8 +1,5 @@
 
-/.gitignore
-/places/
+/main/
 /userStuff/
-/website/
-/enums/
-/comparators/
+/places/
 /services/

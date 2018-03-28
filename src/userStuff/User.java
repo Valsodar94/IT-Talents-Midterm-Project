@@ -1,4 +1,5 @@
 package userStuff;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import java.util.Scanner;
 
+import exceptions.InvalidDateException;
 import exceptions.InvalidInformationException;
 import places.City;
 import places.Place;
@@ -24,79 +26,73 @@ public class User {
 	private String phoneNumber;
 	private LocalDate birthday;
 	private Website website;
-	
+
 	private List<Reservation> myReservations;
 	private List<Place> favouritePlaces;
 	private List<Place> placesJournal;
 	private List<Comment> comments;
 	private List<Reservation> pastReservations;
-	
-	
 
-
-
-	protected User(String firstName, String lastName, City city, String emailAdress, String password, String phoneNumber, LocalDate birthday, Website website) throws InvalidInformationException {
-		if(checkForValidString(firstName)) {
-			if(checkForValidString(lastName)) {
-//				Da se dobavi kachestvena proverka za city s exception + systoto za birtday
-				if(city!=null) {
-					if(UserAdministration.checkForValidEMail(emailAdress)) {
-						if(checkForValidPassword(password)) {
-							if(checkForValidPhoneNumber(phoneNumber)) {
-								if(birthday!=null) {
+	protected User(String firstName, String lastName, City city, String emailAdress, String password,
+			String phoneNumber, LocalDate birthday, Website website) throws InvalidInformationException {
+		if (checkForValidString(firstName)) {
+			if (checkForValidString(lastName)) {
+				// Da se dobavi kachestvena proverka za city s exception + systoto za birtday
+				if (city != null) {
+					if (UserAdministration.checkForValidEMail(emailAdress)) {
+						if (checkForValidPassword(password)) {
+							if (checkForValidPhoneNumber(phoneNumber)) {
+								if (birthday != null) {
 								}
 							}
 						}
 					}
 				}
-			}	
+			}
 		}
 		System.out.println("Registration sucessfull!");
-		this.firstName=firstName;
-		this.lastName=lastName;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.city = city;
 		this.emailAdress = emailAdress;
 		this.password = password;
-		this.birthday=birthday;
+		this.birthday = birthday;
 		this.myReservations = new ArrayList<>();
 		this.favouritePlaces = new ArrayList<>();
 		this.placesJournal = new ArrayList<>();
 		this.comments = new ArrayList<>();
 		this.pastReservations = new ArrayList<>();
 		this.website = website;
-		
+
 	}
 
-
-	
-
-	
-	public void changePassword(String newPassword,String oldPassword) {
+	public void changePassword(String newPassword, String oldPassword) {
 		try {
-			if(checkForPasswordMatch(oldPassword)) {
-				if(checkForValidPassword(newPassword)) 
-					this.password=newPassword;
+			if (checkForPasswordMatch(oldPassword)) {
+				if (checkForValidPassword(newPassword))
+					this.password = newPassword;
 			}
 		} catch (InvalidInformationException e) {
 			System.out.println("The password was not changed! Reason: " + e.getMessage());
 		}
 	}
-	
+
 	public void changeEMail(String oldPassword, String newEMail) {
 		try {
-			if(checkForPasswordMatch(oldPassword)) {
-				if(UserAdministration.checkForValidEMail(newEMail))
-					this.emailAdress=newEMail;
+			if (checkForPasswordMatch(oldPassword)) {
+				if (UserAdministration.checkForValidEMail(newEMail))
+					this.emailAdress = newEMail;
 			}
 		} catch (InvalidInformationException e) {
 			System.out.println("The email was not changed! Reason: " + e.getMessage());
 
 		}
 	}
+
 	public void changeFirstName(String firstName, String password) {
 		try {
-			if(checkForPasswordMatch(password)) {
-				if(checkForValidString(firstName)) {
+			if (checkForPasswordMatch(password)) {
+				if (checkForValidString(firstName)) {
 					this.firstName = firstName;
 				}
 			}
@@ -104,10 +100,11 @@ public class User {
 			System.out.println("The name was not changed! Reason: " + e.getMessage());
 		}
 	}
+
 	public void changeLastName(String lastName, String password) {
 		try {
-			if(checkForPasswordMatch(password)) {
-				if(checkForValidString(lastName)) {
+			if (checkForPasswordMatch(password)) {
+				if (checkForValidString(lastName)) {
 					this.firstName = lastName;
 				}
 			}
@@ -115,10 +112,11 @@ public class User {
 			System.out.println("The last name was not changed! Reason: " + e.getMessage());
 		}
 	}
-	public void changeCity(String password,City newCity) {
+
+	public void changeCity(String password, City newCity) {
 		try {
-			if(checkForPasswordMatch(password)) {
-				if(newCity!=null) {
+			if (checkForPasswordMatch(password)) {
+				if (newCity != null) {
 					this.city = newCity;
 				}
 			}
@@ -126,20 +124,22 @@ public class User {
 			System.out.println("The city was not changed! Reason: " + e.getMessage());
 		}
 	}
+
 	public void changeMobileNumber(String password, String phoneNumber) {
 		try {
-			if(checkForPasswordMatch(password))
-				if(checkForValidPhoneNumber(phoneNumber))
-					this.phoneNumber=phoneNumber;
+			if (checkForPasswordMatch(password))
+				if (checkForValidPhoneNumber(phoneNumber))
+					this.phoneNumber = phoneNumber;
 		} catch (InvalidInformationException e) {
 			System.out.println("The mobile number was not changed! Reason: " + e.getMessage());
 
 		}
 	}
+
 	public void changeBirthday(String password, LocalDate birthday) {
 		try {
-			if(checkForPasswordMatch(password)) {
-				if(birthday!=null) {
+			if (checkForPasswordMatch(password)) {
+				if (birthday != null) {
 					this.birthday = birthday;
 				}
 			}
@@ -147,57 +147,82 @@ public class User {
 			System.out.println("The birthday was not changed! Reason: " + e.getMessage());
 		}
 	}
+
 	public void addAPlaceInJournal(Place p) {
-		if(p!=null)
+		if (p != null)
 			this.placesJournal.add(p);
 	}
+
 	public void addReservation(Reservation r) {
-		if(r!=null) {
+		if (r != null) {
 			this.myReservations.add(r);
 		}
 	}
+
+	// za otkazvane na rezervaciq
+	public void cancelReservation(Reservation r) throws InvalidInformationException {
+		if (r != null && myReservations.contains(r)) {
+			myReservations.remove(r);
+			Place place = r.getPlace();
+			LocalDateTime date = r.getDateAndTime();
+			place.cancelReservation(r, date);
+			System.out.println("Your reservation has been canceled successfully!");
+		} else {
+			throw new InvalidInformationException("Not existing reservation!");
+		}
+	}
+	
+	//napravih za edit na imeto no trqbva i za drugite poleta da se napravi
+	public void editReservation(Reservation r, LocalDateTime date) throws InvalidInformationException, InvalidDateException {
+		if (r != null && myReservations.contains(r)) {
+			//makeReservation
+			cancelReservation(r);
+			//addReservation
+		} else {
+			throw new InvalidInformationException("Not existing reservation!");
+		}
+	}
+
 	public void addLubimoZavedenie(Place fav) {
-		if(fav!=null) {
+		if (fav != null) {
 			this.favouritePlaces.add(fav);
 		}
 	}
+
 	public void removeLubimoZavedenie(Place fav) {
-		if(fav!=null) {
-			if(this.favouritePlaces.contains(fav)) {
+		if (fav != null) {
+			if (this.favouritePlaces.contains(fav)) {
 				this.favouritePlaces.remove(fav);
 			}
 		}
 	}
-	
-	
-	protected static boolean  checkForValidPhoneNumber(String phoneNumber) throws InvalidInformationException{
-		if(phoneNumber!=null) {
-			if(phoneNumber.trim().length()==10) {
-				for(int i=0;i<phoneNumber.length();i++) {
-					if(!(Character.isDigit(i))) 
+
+	protected static boolean checkForValidPhoneNumber(String phoneNumber) throws InvalidInformationException {
+		if (phoneNumber != null) {
+			if (phoneNumber.trim().length() == 10) {
+				for (int i = 0; i < phoneNumber.length(); i++) {
+					if (!(Character.isDigit(i)))
 						throw new InvalidInformationException("Nomera trqbva da se systoi samo ot cifri!");
-					else 
+					else
 						return true;
 				}
-			} else 
+			} else
 				throw new InvalidInformationException("Nomera trqbva da sydyrza tochno 10 cifri!");
-		} else 
+		} else
 			throw new InvalidInformationException("Podavash null za phonenumber");
 		return false;
 	}
 
-	protected static boolean checkForValidString(String str) throws InvalidInformationException{
-		if((str!=null) && (str.trim().length()>0))
+	protected static boolean checkForValidString(String str) throws InvalidInformationException {
+		if ((str != null) && (str.trim().length() > 0))
 			return true;
-		else 
+		else
 			throw new InvalidInformationException("Podavash null za String ili imash po-malko ot 1 znak");
 	}
 
-
-
-	protected boolean checkForPasswordMatch(String password) throws InvalidInformationException{
-		if(password!=null) {
-			if(password.equals(this.password))
+	protected boolean checkForPasswordMatch(String password) throws InvalidInformationException {
+		if (password != null) {
+			if (password.equals(this.password))
 				return true;
 			else
 				throw new InvalidInformationException("Parolite ne syvpadat!!");
@@ -206,64 +231,73 @@ public class User {
 		}
 	}
 
-	protected static boolean checkForValidPassword (String password) throws InvalidInformationException {
-		if(password!=null) {
-			if(password.trim().length()>5) 
+	protected static boolean checkForValidPassword(String password) throws InvalidInformationException {
+		if (password != null) {
+			if (password.trim().length() > 5)
 				return true;
-			else 
+			else
 				throw new InvalidInformationException("Dylzhinata na parolata trqbva da e pone 5 znaka");
-		} else 
+		} else
 			throw new InvalidInformationException("Podavash null za parola..");
 	}
-	
 
-//	getters and setters:
+	// getters and setters:
 	public String getFirstName() {
 		return firstName;
 	}
+
 	private void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
+
 	public String getLastName() {
 		return lastName;
 	}
+
 	private void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+
 	public City getCity() {
 		return city;
 	}
+
 	private void setCity(City city) {
 		this.city = city;
 	}
+
 	public String getEmailAdress() {
 		return emailAdress;
 	}
+
 	private void setEmailAdress(String emailAdress) {
 		this.emailAdress = emailAdress;
 	}
+
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
+
 	public LocalDate getBirthday() {
 		return birthday;
 	}
+
 	public String getPassword() {
 		return this.password;
 	}
-	
+
 	protected List<Reservation> getMyReservations() {
 		return this.myReservations;
 	}
-	
+
 	protected List<Place> getLybimiZavedeniq() {
 		return this.favouritePlaces;
 	}
-	
+
 	protected List<Place> getDnevnikZaZavedeniq() {
 		return this.placesJournal;
 	}
-	
+
 	protected List<Comment> getComments() {
 		return this.comments;
 	}
@@ -272,13 +306,8 @@ public class User {
 		return this.pastReservations;
 	}
 
-
-
-
-
-
 	public Website getWebsite() {
 		return website;
 	}
-	
+
 }

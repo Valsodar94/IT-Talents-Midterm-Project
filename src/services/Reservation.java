@@ -22,7 +22,7 @@ public class Reservation {
 	private Event event;
 
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, User user, Place place) throws Exception {
+			String locationPref, int discount, User user, Place place) throws InvalidInformationException, InvalidDateException {
 
 		this.reservationID = generateReservationID();
 		setDateAndTime(dateAndTimeOfReservation);
@@ -30,16 +30,15 @@ public class Reservation {
 		setNumberOfChildren(numberOfChildren);
 		setlocationPref(locationPref);
 		setDiscount(discount);
-		// Create new exception!
 		if (user != null) {
 			this.user = user;
 		} else {
-			throw new Exception();
+			throw new InvalidInformationException("Invalid user!");
 		}
 		if (place != null) {
 			this.place = place;
 		} else {
-			throw new Exception();
+			throw new InvalidInformationException("Invalid place!");
 		}
 	}
 
@@ -121,7 +120,7 @@ public class Reservation {
 		}
 	}
 
-	public String getLocation() {
+	public String getLocationPref() {
 		return locationPref;
 	}
 
