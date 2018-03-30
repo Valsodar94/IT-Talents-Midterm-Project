@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
+import exceptions.InvalidDateException;
 import exceptions.InvalidInformationException;
 import places.City;
+import places.Place;
+import services.Event;
+import services.Offer;
 import services.Reservation;
 import website.Website;
 
@@ -26,7 +29,7 @@ public abstract class UserAdministration {
 				Admin a = new Admin(firstName, lastName, city, emailAdress, password, phoneNumber, birthday);
 				allUsers.add(a);
 				return a;
-			} else 
+			} else
 				throw new InvalidInformationException("Registraciq neuspeshna! greshna parola za admin");
 		}
 		else {
@@ -35,6 +38,7 @@ public abstract class UserAdministration {
 			return u;
 		}
 	}
+
 	public static void login(String password, String email) throws InvalidInformationException{
 		if(!isLogged) {
 			if(password!=null && email!=null) {
@@ -49,9 +53,10 @@ public abstract class UserAdministration {
 							throw new InvalidInformationException("Login neuspeshen! Nepravilna parola!");
 						}
 					} else {
-						throw new InvalidInformationException("Login neuspeshen! Nqma registriran potrebtiel na takyv email");
+						throw new InvalidInformationException(
+								"Login neuspeshen! Nqma registriran potrebtiel na takyv email");
 					}
-				}	
+				}
 			} else {
 				throw new InvalidInformationException("Login neuspeshen! Podavash mi null za email/parola!");
 			}
@@ -59,7 +64,72 @@ public abstract class UserAdministration {
 			throw new InvalidInformationException("Login neuspeshen! Veche ima vpisan potrebitel");
 		}
 	}
+
+	public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
+			String locationPref, int discount, User user, Place place) {
+		try {
+			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place);
+			//Adding reservation to the user's reservations
+			r.getUser().addReservation(r);
+			//Adding reservation to the place's reservations
+			r.getPlace().addReservation(r);
+		} catch (InvalidInformationException | InvalidDateException e) {
+			e.printStackTrace();
+		}
+	}
 	
+	public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
+			String locationPref, int discount, User user, Place place, Offer offer) {
+		try {
+			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place, offer);
+			//Adding reservation to the user's reservations
+			r.getUser().addReservation(r);
+			//Adding reservation to the place's reservations
+			r.getPlace().addReservation(r);
+		} catch (InvalidInformationException | InvalidDateException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
+			String locationPref, int discount, User user, Place place, Event event) {
+		try {
+			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place, event);
+			//Adding reservation to the user's reservations
+			r.getUser().addReservation(r);
+			//Adding reservation to the place's reservations
+			r.getPlace().addReservation(r);
+		} catch (InvalidInformationException | InvalidDateException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
+			String locationPref, int discount, String extraOptions, User user, Place place, Offer offer) {
+		try {
+			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, extraOptions, user, place, offer);
+			//Adding reservation to the user's reservations
+			r.getUser().addReservation(r);
+			//Adding reservation to the place's reservations
+			r.getPlace().addReservation(r);
+		} catch (InvalidInformationException | InvalidDateException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
+			String locationPref, int discount, String extraOptions, User user, Place place, Event event) {
+		try {
+			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, extraOptions, user, place, event);
+			//Adding reservation to the user's reservations
+			r.getUser().addReservation(r);
+			//Adding reservation to the place's reservations
+			r.getPlace().addReservation(r);
+		} catch (InvalidInformationException | InvalidDateException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private static void refreshPresentAndPastReservations() {
 		LocalDateTime now = LocalDateTime.now();
 		Iterator<Reservation> it = currentUser.getMyReservations().iterator();
@@ -71,8 +141,9 @@ public abstract class UserAdministration {
 			}
 		}
 	}
-	
+
 	public static void logout() {
+
 		if(currentUser!=null) {
 			System.out.println("Logout successful?");
 			currentUser=null;
@@ -82,38 +153,40 @@ public abstract class UserAdministration {
 		}
 	}
 	
-	
 	public static void deleteUser(String password) {
 		if(currentUser!=null) {
 			if(password.equals(currentUser.getPassword())) {
 				allUsers.remove(currentUser);
 				logout();
+
 			}
 		}
 	}
-//	da namerq shablon za email check 
-	public static boolean checkForValidEMail(String eMail) throws InvalidInformationException{
-		if(eMail!=null) {
-			if(eMail.trim().length()>10) {
-				if(eMail.contains("@")) {
-					for(User u: allUsers) {
-						if(u.getEmailAdress().equals(eMail)) {
+
+	// da namerq shablon za email check
+	public static boolean checkForValidEMail(String eMail) throws InvalidInformationException {
+		if (eMail != null) {
+			if (eMail.trim().length() > 10) {
+				if (eMail.contains("@")) {
+					for (User u : allUsers) {
+						if (u.getEmailAdress().equals(eMail)) {
 							throw new InvalidInformationException("Veche ima potrebitel s takyv meil!");
 						}
 					}
-					 return true;
-				}
-				else
+					return true;
+				} else
 					throw new InvalidInformationException("Email-a ti e nevaliden! Ne sydyrzha @");
-			} else 
+			} else
 				throw new InvalidInformationException("Nevaliden email!");
 		} else
 			throw new InvalidInformationException("Podavash mi null za email...");
-		
+
 	}
+
 	public static boolean isLogged() {
 		return isLogged;
 	}
+
 	public static User getU() {
 		return currentUser;
 	}

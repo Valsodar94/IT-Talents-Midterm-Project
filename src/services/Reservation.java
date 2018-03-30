@@ -1,6 +1,7 @@
 package services;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import exceptions.InvalidDateException;
@@ -16,13 +17,14 @@ public class Reservation {
 	private String locationPref;
 	private int discount;
 	private String extraOptions;
-	private final User user;
+	private User user;
 	private final Place place;
 	private Offer offer;
 	private Event event;
 
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, User user, Place place) throws InvalidInformationException, InvalidDateException {
+			String locationPref, int discount, User user, Place place)
+			throws InvalidInformationException, InvalidDateException {
 
 		this.reservationID = generateReservationID();
 		setDateAndTime(dateAndTimeOfReservation);
@@ -43,10 +45,45 @@ public class Reservation {
 	}
 
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, String extraOptions, User user, Place place) throws Exception {
+			String locationPref, int discount, String extraOptions, User user, Place place)
+			throws InvalidInformationException, InvalidDateException {
 		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place);
 		setExtraOptions(extraOptions);
 	}
+
+	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
+			String locationPref, int discount, User user, Place place, Event event)
+			throws InvalidInformationException, InvalidDateException {
+		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place);
+		setEvent(event);
+	}
+
+	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
+			String locationPref, int discount, String extraOptions, User user, Place place, Event event)
+			throws InvalidInformationException, InvalidDateException {
+		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, extraOptions, user,
+				place);
+		setEvent(event);
+	}
+
+	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
+			String locationPref, int discount, User user, Place place, Offer offer)
+			throws InvalidInformationException, InvalidDateException {
+		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place);
+		setOffer(offer);
+	}
+
+	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
+			String locationPref, int discount, String extraOptions, User user, Place place, Offer offer)
+			throws InvalidInformationException, InvalidDateException {
+		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, extraOptions, user,
+				place);
+		setOffer(offer);
+	}
+	
+	
+	
+	
 
 	public String generateReservationID() {
 
@@ -63,17 +100,18 @@ public class Reservation {
 				+ this.dateAndTimeOfReservation.getMonthValue() + "/" + this.dateAndTimeOfReservation.getYear());
 		System.out.println("Adults: " + this.numberOfPeople);
 		System.out.println("Children: " + this.numberOfChildren);
-		System.out.println("Time: " + this.dateAndTimeOfReservation.getHour()+":"+this.dateAndTimeOfReservation.getMinute());
-		System.out.println("Discount: " + this.getDiscount()+"%");
+		System.out.println(
+				"Time: " + this.dateAndTimeOfReservation.getHour() + ":" + this.dateAndTimeOfReservation.getMinute());
+		System.out.println("Discount: " + this.getDiscount() + "%");
 		System.out.println("Reservation number: " + this.reservationID);
 		System.out.println("Place: " + this.locationPref);
-		if(this.extraOptions != null) {
+		if (this.extraOptions != null) {
 			System.out.println("I would like to be " + this.extraOptions);
 		}
-		if(this.event != null) {
+		if (this.event != null) {
 			System.out.println("Event: " + this.event.getTitle());
 		}
-		if(this.offer != null) {
+		if (this.offer != null) {
 			System.out.println("Offer: " + this.offer.getTitle());
 		}
 	}
@@ -87,13 +125,39 @@ public class Reservation {
 	public void setDateAndTime(LocalDateTime dateAndTimeOfReservation) throws InvalidDateException {
 		if (dateAndTimeOfReservation != null) {
 			LocalDateTime currentDateTime = LocalDateTime.now();
-			if (dateAndTimeOfReservation.isEqual(currentDateTime)
-					|| dateAndTimeOfReservation.isAfter(currentDateTime)) {
+			LocalTime timeOfReservation = dateAndTimeOfReservation.toLocalTime();
+			if (dateAndTimeOfReservation.isAfter(currentDateTime)
+					&& timeOfReservation.isAfter(this.place.getStartHour())
+					&& timeOfReservation.isBefore((this.place.getCloseHour()))) {
 				this.dateAndTimeOfReservation = dateAndTimeOfReservation;
 			}
 		} else {
 			throw new InvalidDateException("Invalid date or time of reservation");
 		}
+	}
+
+	private void setEvent(Event event) throws InvalidInformationException {
+		if (event != null) {
+			this.event = event;
+		} else {
+			throw new InvalidInformationException("There is no valid event!");
+		}
+	}
+
+	public Event getEvent() {
+		return event;
+	}
+
+	private void setOffer(Offer offer) throws InvalidInformationException {
+		if (offer != null) {
+			this.offer = offer;
+		} else {
+			throw new InvalidInformationException("There is no valid offer!");
+		}
+	}
+
+	public Offer getOffer() {
+		return offer;
 	}
 
 	public int getNumberOfPeople() {
