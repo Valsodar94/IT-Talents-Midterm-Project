@@ -15,12 +15,12 @@ import website.Website;
 public abstract class UserAdministration {
 	private static boolean isLogged;
 	private static List<User> allUsers= new ArrayList<>();;
-	private static User u;
+	private static User currentUser;
 	private static String adminPass = "";
 
 	
 	
-	public User register(String firstName, String lastName, City city, String emailAdress, String password, String phoneNumber, LocalDate birthday, Website w,boolean isAdmin, String adminPass) throws InvalidInformationException {
+	public static User register(String firstName, String lastName, City city, String emailAdress, String password, String phoneNumber, LocalDate birthday, Website w,boolean isAdmin, String adminPass) throws InvalidInformationException {
 		if(isAdmin) {
 			if(UserAdministration.adminPass.equals(adminPass)) {
 				Admin a = new Admin(firstName, lastName, city, emailAdress, password, phoneNumber, birthday, w);
@@ -39,11 +39,11 @@ public abstract class UserAdministration {
 		if(!isLogged) {
 			if(password!=null && email!=null) {
 				for(User user: allUsers) {
-					if(u.getEmailAdress().equals(email)) {
-						if(u.getPassword().equals(password)) {
+					if(currentUser.getEmailAdress().equals(email)) {
+						if(currentUser.getPassword().equals(password)) {
 							System.out.println("Login uspeshen");
 							isLogged = true;
-							u = user;
+							currentUser = user;
 							refreshPresentAndPastReservations();
 						} else {
 							throw new InvalidInformationException("Login neuspeshen! Nepravilna parola!");
@@ -62,20 +62,20 @@ public abstract class UserAdministration {
 	
 	private static void refreshPresentAndPastReservations() {
 		LocalDateTime now = LocalDateTime.now();
-		Iterator<Reservation> it = u.getMyReservations().iterator();
+		Iterator<Reservation> it = currentUser.getMyReservations().iterator();
 		while(it.hasNext()) {
 			Reservation r = it.next();
 			if(r.getDateAndTime().isBefore(now)) {
-				u.getPastReservations().add(r);
+				currentUser.getPastReservations().add(r);
 				it.remove();
 			}
 		}
 	}
 	
 	public static void logout() {
-		if(u!=null) {
+		if(currentUser!=null) {
 			System.out.println("Logout successful?");
-			u=null;
+			currentUser=null;
 		} else {
 			System.out.println("Nqma vpisan potrebitel, kakyv logout iskash?");
 		}
@@ -117,6 +117,6 @@ public abstract class UserAdministration {
 		return isLogged;
 	}
 	public static User getU() {
-		return u;
+		return currentUser;
 	}
 }

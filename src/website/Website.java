@@ -65,13 +65,13 @@ public class Website {
 			}
 		}
 	}
-	public void showPlaces(City city,boolean isRestaurant, int num) {
+	public void showPlaces(String city,boolean isRestaurant, int num) {
 		if(city!=null) {
 			if(num>0) {
 				int counter = 0;
 				if(isRestaurant) {
 					for(Place p: allRestaurants) {
-						if(p.getCity().equals(city.getName())) {
+						if(p.getCity().equals(city)) {
 							System.out.println(p);
 							counter++;
 						}
@@ -80,7 +80,7 @@ public class Website {
 					}
 				} else {
 					for(Place p: allClubs) {
-						if(p.getCity().equals(city.getName())) {
+						if(p.getCity().equals(city)) {
 							System.out.println(p);
 							counter++;
 						}
