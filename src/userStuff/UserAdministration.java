@@ -20,17 +20,17 @@ public abstract class UserAdministration {
 
 	
 	
-	public static User register(String firstName, String lastName, City city, String emailAdress, String password, String phoneNumber, LocalDate birthday, Website w,boolean isAdmin, String adminPass) throws InvalidInformationException {
+	public static User register(String firstName, String lastName, String city, String emailAdress, String password, String phoneNumber, LocalDate birthday,boolean isAdmin, String adminPass) throws InvalidInformationException {
 		if(isAdmin) {
 			if(UserAdministration.adminPass.equals(adminPass)) {
-				Admin a = new Admin(firstName, lastName, city, emailAdress, password, phoneNumber, birthday, w);
+				Admin a = new Admin(firstName, lastName, city, emailAdress, password, phoneNumber, birthday);
 				allUsers.add(a);
 				return a;
 			} else 
 				throw new InvalidInformationException("Registraciq neuspeshna! greshna parola za admin");
 		}
 		else {
-			User u = new User(phoneNumber, phoneNumber, city, phoneNumber, phoneNumber, phoneNumber, birthday, w);
+			User u = new User(phoneNumber, phoneNumber, city, phoneNumber, phoneNumber, phoneNumber, birthday);
 			allUsers.add(u);
 			return u;
 		}

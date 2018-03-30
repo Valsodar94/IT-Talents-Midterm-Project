@@ -1,3 +1,5 @@
+package Demo;
+
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -11,7 +13,7 @@ public class Demo {
 	private static final String WELCOME_MESSAGE = "Welcome in our site ";
 
 	public static void main(String[] args) {
-		Website w = new Website();
+		Website w = Website.getWebsite();
 		System.out.println(WELCOME_MESSAGE);
 		while(true) {
 			showAvailableOptions();

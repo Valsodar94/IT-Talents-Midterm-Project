@@ -10,6 +10,7 @@ import userStuff.Admin;
 import userStuff.User;
 // move the Website class to another package with Admin or probably redesigning the entire class and giving direct access of the collections to the admin class
 public class Website {
+	private static Website web = null;
 	private String infoForTheWebstie;
 	private String contacts;
 	private String FAQ;
@@ -20,25 +21,35 @@ public class Website {
 	private Set<Event> allEvents;
 	private Set<Offer> allOffers;
 	
-	public Website() {
+	private Website() {
 	
 		allRestaurants = new TreeSet<>();
 		allEvents = new TreeSet<>();
 		allOffers = new TreeSet<>();
 		allClubs = new TreeSet<>();
+		
 	}
 
-	public Website(String infoForTheWebstie) {
+
+	private Website(String infoForTheWebstie) {
 		this();
 		setInfoForTheWebstie(infoForTheWebstie);
 	}
-	public Website(String infoForTheWebstie, String contacts) {
+	private Website(String infoForTheWebstie, String contacts) {
 		this(infoForTheWebstie);
 		setContacts(contacts);
 	}
-	public Website(String infoForTheWebstie, String contacts, String FAQ) {
+	private Website(String infoForTheWebstie, String contacts, String FAQ) {
 		this(infoForTheWebstie, contacts);
 		setFAQ(FAQ);
+	}
+	
+	public static Website getWebsite() {
+		if(web.equals(null))
+			return new Website();
+		else
+			return web;
+			
 	}
 	
 //	to add exceptions for showPlaces methods. City na Place ne e sigyrno dali ste e String!
