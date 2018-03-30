@@ -3,12 +3,7 @@ package userStuff;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-
-import java.util.Scanner;
-
 import exceptions.InvalidDateException;
 import exceptions.InvalidInformationException;
 import places.City;
@@ -65,6 +60,7 @@ public class User {
 		this.website = website;
 
 	}
+	
 
 	public void changePassword(String newPassword, String oldPassword) {
 		try {
@@ -201,7 +197,7 @@ public class User {
 		if (phoneNumber != null) {
 			if (phoneNumber.trim().length() == 10) {
 				for (int i = 0; i < phoneNumber.length(); i++) {
-					if (!(Character.isDigit(i)))
+					if (!(Character.isDigit(phoneNumber.charAt(i))))
 						throw new InvalidInformationException("Nomera trqbva da se systoi samo ot cifri!");
 					else
 						return true;
