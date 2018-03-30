@@ -14,7 +14,7 @@ import services.Comment;
 import services.Reservation;
 import userStuff.UserAdministration;
 
-public class Place {
+public class Place implements Comparable<Place>{
 	private String name;
 	private String address;
 	private String emailAddress;
@@ -353,6 +353,16 @@ public class Place {
 
 	public LocalDateTime getDateAndTimeOfRegistration() {
 		return dateAndTimeOfRegistration;
+	}
+
+	@Override
+	public int compareTo(Place p2) {
+		double p1Rating = this.getAvgRating();
+		double p2Rating = p2.getAvgRating();
+		if(!(p2Rating==p1Rating)) {
+			return (int) (p2Rating - p1Rating);
+		} else 
+			return p2.getName().compareTo(this.getName());
 	}
 
 }

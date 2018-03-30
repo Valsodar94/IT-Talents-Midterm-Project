@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import exceptions.InvalidDateException;
 import exceptions.InvalidInformationException;
-import places.City;
 import places.Place;
 import services.Comment;
 import services.Reservation;
@@ -15,7 +14,7 @@ import website.Website;
 public class User {
 	private String firstName;
 	private String lastName;
-	private City city;
+	private String city;
 	private String emailAdress;
 	private String password;
 	private String phoneNumber;
@@ -28,8 +27,8 @@ public class User {
 	private List<Comment> comments;
 	private List<Reservation> pastReservations;
 
-	protected User(String firstName, String lastName, City city, String emailAdress, String password,
-			String phoneNumber, LocalDate birthday, Website website) throws InvalidInformationException {
+	protected User(String firstName, String lastName, String city, String emailAdress, String password,
+			String phoneNumber, LocalDate birthday) throws InvalidInformationException {
 		if (checkForValidString(firstName)) {
 			if (checkForValidString(lastName)) {
 				// Da se dobavi kachestvena proverka za city s exception + systoto za birtday
@@ -57,7 +56,6 @@ public class User {
 		this.placesJournal = new ArrayList<>();
 		this.comments = new ArrayList<>();
 		this.pastReservations = new ArrayList<>();
-		this.website = website;
 
 	}
 	
@@ -109,7 +107,7 @@ public class User {
 		}
 	}
 
-	public void changeCity(String password, City newCity) {
+	public void changeCity(String password, String newCity) {
 		try {
 			if (checkForPasswordMatch(password)) {
 				if (newCity != null) {
@@ -254,11 +252,11 @@ public class User {
 		this.lastName = lastName;
 	}
 
-	public City getCity() {
+	public String getCity() {
 		return city;
 	}
 
-	private void setCity(City city) {
+	private void setCity(String city) {
 		this.city = city;
 	}
 
@@ -302,8 +300,5 @@ public class User {
 		return this.pastReservations;
 	}
 
-	public Website getWebsite() {
-		return website;
-	}
 
 }
