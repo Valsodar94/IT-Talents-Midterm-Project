@@ -24,12 +24,14 @@ public class Website {
 	private Set<Place> allClubs;
 	private Set<Event> allEvents;
 	private Set<Offer> allOffers;
+	private Set<City> allCities;
 	
 	private Website() {
 		allRestaurants = new TreeSet<>();
 		allEvents = new TreeSet<>();
 		allOffers = new TreeSet<>();
 		allClubs = new TreeSet<>();
+		allCities = new HashSet<>();
 	}
 
 
@@ -170,4 +172,13 @@ public class Website {
 		else
 			return Collections.unmodifiableSet(allOffers);
 	}
+
+
+	public Set<City> getAllCities(User u) {
+		if(u instanceof Admin) 
+			return this.allCities;
+		else
+			return Collections.unmodifiableSet(allCities);
+	}
+
 }
