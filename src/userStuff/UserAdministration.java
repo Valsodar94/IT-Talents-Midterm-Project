@@ -76,20 +76,18 @@ public abstract class UserAdministration {
 		if(currentUser!=null) {
 			System.out.println("Logout successful?");
 			currentUser=null;
+			isLogged = false;
 		} else {
 			System.out.println("Nqma vpisan potrebitel, kakyv logout iskash?");
 		}
 	}
 	
 	
-//	to add password check before deleting!!!
-	public static void deleteUser(User u ) {
-		if(u!=null) {
-			Iterator<User> it = allUsers.iterator();
-			while(it.hasNext()) {
-				User user = it.next();
-				if(u.equals(user))
-					it.remove();
+	public static void deleteUser(String password) {
+		if(currentUser!=null) {
+			if(password.equals(currentUser.getPassword())) {
+				allUsers.remove(currentUser);
+				logout();
 			}
 		}
 	}

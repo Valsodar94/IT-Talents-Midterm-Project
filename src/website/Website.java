@@ -1,14 +1,18 @@
 package website;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
+
 import places.City;
 import places.Place;
 import services.Event;
 import services.Offer;
 import userStuff.Admin;
 import userStuff.User;
-// move the Website class to another package with Admin or probably redesigning the entire class and giving direct access of the collections to the admin class
+import userStuff.UserAdministration;
 public class Website {
 	private static Website web = null;
 	private String infoForTheWebstie;
@@ -22,12 +26,10 @@ public class Website {
 	private Set<Offer> allOffers;
 	
 	private Website() {
-	
 		allRestaurants = new TreeSet<>();
 		allEvents = new TreeSet<>();
 		allOffers = new TreeSet<>();
 		allClubs = new TreeSet<>();
-		
 	}
 
 
@@ -49,20 +51,18 @@ public class Website {
 			return new Website();
 		else
 			return web;
-			
 	}
 	
-//	to add exceptions for showPlaces methods. City na Place ne e sigyrno dali ste e String!
-	public void showPlaces(City city, boolean isRestaurant) {
+	public void showPlaces(String city, boolean isRestaurant) {
 		if(city!=null) {
 			if(isRestaurant) {
 				for(Place p :allRestaurants) {
-					if(p.getCity().equals(city.getName()))
+					if(p.getCity().equals(city))
 						System.out.println(p);
 				}
 			} else {
 				for(Place p: allClubs) {
-					if(p.getCity().equals(city.getName()))
+					if(p.getCity().equals(city))
 						System.out.println(p);
 				}
 			}
@@ -94,18 +94,18 @@ public class Website {
 			}
 		}
 	}
-	public void showEvents(City city) {
+	public void showEvents(String city) {
 		if(city!=null) {
 			for(Event e:allEvents) {
-				if(e.getPlace().getCity().equals(city.getName()));
+				if(e.getPlace().getCity().equals(city));
 					System.out.println(e);
 			}
 		}
 	}
-	public void showOffers(City city) {
+	public void showOffers(String city) {
 		if(city!=null) {
 			for(Offer o:allOffers) {
-				if(o.getPlace().getCity().equals(city.getName()));
+				if(o.getPlace().getCity().equals(city));
 					System.out.println(o);
 			}
 		}
@@ -113,25 +113,36 @@ public class Website {
 	
 
 	//	nujni sa systite metodi za clubs i restaurants. Otdelno trqbva da se napravi po oste 1 overload method za nachin na sortirane(default da byde po reiting)
+	
 	public String getInfoForTheWebstie() {
 		return infoForTheWebstie;
 	}
 	public void setInfoForTheWebstie(String infoForTheWebstie) {
-		this.infoForTheWebstie = infoForTheWebstie;
+		if(UserAdministration.getU() instanceof Admin) {
+			if(infoForTheWebstie!=null)
+				this.infoForTheWebstie = infoForTheWebstie;
+		}
 	}
 	public String getContacts() {
 		return contacts;
 	}
 	public void setContacts(String contacts) {
-		this.contacts = contacts;
+		if(UserAdministration.getU() instanceof Admin) {
+			if(contacts!=null)
+				this.contacts = contacts;
+		}
 	}
 	public String getFAQ() {
 		return FAQ;
 	}
-	public void setFAQ(String fAQ) {
-		FAQ = fAQ;
+	public void setFAQ(String FAQ) {
+		if(UserAdministration.getU() instanceof Admin) {
+			if(FAQ!=null)
+				this.FAQ = FAQ;
+		}
 	}
-// better check than User u!!!
+
+	
 	public Set<Place> getAllRestaurants(User u) {
 		if(u instanceof Admin) 
 			return this.allRestaurants;
