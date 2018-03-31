@@ -114,6 +114,15 @@ public class Demo {
 				password = getPassword();
 				currentUser.changeBirthday(password, birthday);
 				break;
+			case 93:
+				updateWebsiteInfo();
+				break;
+			case 94:
+				updateWebsiteFAQ();
+				break;
+			case 95:
+				updateWebsiteContacts();
+				break;
 			default:
 				System.out.println("Ne beshe izbrana nito edna opciq za promqna na profil, vryshtane v glavnoto menu.");
 			}
@@ -122,20 +131,23 @@ public class Demo {
 		}
 		
 	}
-	private static void deleteProfile() {
-		String password = getPassword();
-		UserAdministration.deleteUser(password);
+	private static void updateWebsiteContacts() {
+		System.out.println("Enter the information you want to be shown as contacts.");
+		String contacts = sc.nextLine();
+		Website.getWebsite().setContacts(contacts);
 	}
-	private static int changeProfileOptions() {
-		System.out.println("You can change one of the following things in your profile: "
-				+ "Type 1 to change first name, 2 - second name, 3 - city, 4 - email, 5 - password, 6 -phone number, 7 - birtday, and any other number to cancel.");
-		return sc.nextInt();
+	private static void updateWebsiteFAQ() {
+		System.out.println("Enter the information you want to be shown as FAQ.");
+		String FAQ = sc.nextLine();
+		Website.getWebsite().setFAQ(FAQ);
 	}
-	private static void logIn() throws InvalidInformationException {
-		String password = getPassword();
-		String email = getEmail();
-		UserAdministration.login(password, email);
+//	update info/faq/contacts from files?
+	private static void updateWebsiteInfo() {
+		System.out.println("Enter the information you want to be shown as information for the website: ");
+		String info =sc.nextLine();
+		Website.getWebsite().setInfoForTheWebstie(info);
 	}
+	
 	private static void showAvailableOptions() {
 		System.out.println("What would you like to do?");
 		System.out.println("Type: 1, to look at the restaurants we have to offer");
@@ -155,11 +167,29 @@ public class Demo {
 				System.out.println("Type 12, to delete your profile");
 				System.out.println();
 			} else {
-//				admin options
+				System.out.println("Type 93, to update the info for the website");
+				System.out.println("Type 94 to update website's FAQ");
+				System.out.println("Type 95 to update the website's contacts");
 			}
 		}
 		
 	}
+	
+	private static void deleteProfile() {
+		String password = getPassword();
+		UserAdministration.deleteUser(password);
+	}
+	private static int changeProfileOptions() {
+		System.out.println("You can change one of the following things in your profile: "
+				+ "Type 1 to change first name, 2 - second name, 3 - city, 4 - email, 5 - password, 6 -phone number, 7 - birtday, and any other number to cancel.");
+		return sc.nextInt();
+	}
+	private static void logIn() throws InvalidInformationException {
+		String password = getPassword();
+		String email = getEmail();
+		UserAdministration.login(password, email);
+	}
+	
 
 	private static User makeRegistration() throws InvalidInformationException {
 		String firstName = getFirstName();
