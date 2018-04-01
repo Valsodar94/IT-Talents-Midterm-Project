@@ -1,2 +1,10 @@
 
+<<<<<<< HEAD
 *.class
+=======
+/userStuff/
+/services/
+/Main.class
+/places/
+/website/
+>>>>>>> dccdb766b4202b93d5797b67b839d31fdae93a4f

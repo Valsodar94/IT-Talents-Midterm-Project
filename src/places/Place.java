@@ -1,20 +1,20 @@
 package places;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Map.Entry;
+
 import enums.ExtraReservationOptions;
 import exceptions.InvalidInformationException;
 import services.Comment;
 import services.Reservation;
-import userStuff.UserAdministration;
 
-public class Place implements Comparable<Place>{
+public class Place implements Comparable<Place> {
 	private String name;
 	private String address;
 	private String emailAddress;
@@ -23,7 +23,9 @@ public class Place implements Comparable<Place>{
 	// for restaurant - true, for club - false
 	private boolean isRestaurant;
 	// kitchen for restaurant, music for club
-	private String characteristicOfPlace;
+	private String characteristicInput;
+	// List keeping kitchens for restaurant or music for clubs
+	private List<String> characteristicOfPlace;
 	private String city;
 	private String region;
 	private String avgCost;
@@ -35,21 +37,22 @@ public class Place implements Comparable<Place>{
 	private LocalTime closeHour;
 	private int maxCapacity;
 	private int currentCapacity = maxCapacity;
+	private int discount;
 
-	private SortedMap<LocalDateTime, Reservation> reservations;
+	private SortedMap<LocalDate, List<Reservation>> reservations;
 	private List<Comment> comments;
 	private List<Integer> ratings;
 	private List<String> locationPrefs;
 	private List<ExtraReservationOptions> extraReservationOptions;
 
-	public Place(String name, String address, String emailAddress, boolean isRestaurant, String characteristicOfPlace,
+	public Place(String name, String address, String emailAddress, boolean isRestaurant, String characteristicInput,
 			String city, String region, String avgCost, LocalTime startHour, LocalTime closeHour, int maxCapacity)
 			throws InvalidInformationException {
 		setName(name);
 		setAddress(address);
 		setEmailAddress(emailAddress);
 		this.isRestaurant = isRestaurant;
-		setCharacteristicOfPlace(characteristicOfPlace);
+		setCharacteristicInput(characteristicInput);
 		setCity(city);
 		setRegion(region);
 		dateAndTimeOfRegistration = LocalDateTime.now();
@@ -58,7 +61,8 @@ public class Place implements Comparable<Place>{
 		setCloseHour(closeHour);
 		setMaxCapacity(maxCapacity);
 
-		reservations = new TreeMap<LocalDateTime, Reservation>();
+		characteristicOfPlace = new ArrayList<>();
+		reservations = new TreeMap<LocalDate, List<Reservation>>();
 		comments = new ArrayList<Comment>();
 		ratings = new ArrayList<Integer>();
 		locationPrefs = new ArrayList<>();
@@ -66,15 +70,23 @@ public class Place implements Comparable<Place>{
 
 	}
 
-	public boolean hasAvailableSeats(int number) throws InvalidInformationException {
-		if (number > 0) {
-			if (this.currentCapacity > number) {
-				return true;
+	public boolean hasAvailableSeats(LocalDate date, int number) throws InvalidInformationException {
+		if (date != null && number > 0) {
+			int sumOfSeats = 0;
+			if (this.reservations.containsKey(date)) {
+				List<Reservation> list = new ArrayList<>();
+				list = this.reservations.get(date);
+				for (int res = 0; res < list.size(); res++) {
+					int seats = list.get(res).getNumberOfPeople() + list.get(res).getNumberOfChildren();
+					sumOfSeats += seats;
+				}
+				this.currentCapacity = this.maxCapacity - sumOfSeats;
+				return this.currentCapacity > number;
 			} else {
-				return false;
+				return true;
 			}
 		} else {
-			throw new InvalidInformationException("Invalid number of people!");
+			throw new InvalidInformationException("Invalid information given! Cannot check for availability!");
 		}
 	}
 
@@ -85,27 +97,46 @@ public class Place implements Comparable<Place>{
 		return false;
 	}
 
-	public void addReservation(Reservation reservation) throws InvalidInformationException {
+	public boolean doesContainReservation(Reservation reservation) throws InvalidInformationException {
 		if (reservation != null) {
-			this.reservations.put(reservation.getDateAndTime(), reservation);
+			if (this.reservations.containsKey(reservation.getDate())) {
+				List<Reservation> list = new ArrayList<>();
+				list = this.reservations.get(reservation.getDate());
+				for (int res = 0; res < list.size(); res++) {
+					if (reservation.getReservationID().equals(list.get(res).getReservationID())) {
+						return true;
+					} 
+				}
+				return false;
+			} else {
+				return false;
+			}
 		} else {
-			throw new InvalidInformationException("Invalid reservation!");
+			throw new InvalidInformationException("Invalid reservation details!");
 		}
 	}
 
-	public void cancelReservation(Reservation reservation, LocalDateTime date) throws InvalidInformationException {
-		if (reservation != null && date != null) {
-			if (this.reservations.containsKey(date)) {
-				for (Entry<LocalDateTime, Reservation> entry : this.reservations.entrySet()) {
-					String id = entry.getValue().getReservationID();
-					if (date.equals(entry.getKey()) && reservation.getReservationID().equals(id)) {
-						this.reservations.remove(entry.getKey(), id);
-					} else {
-						throw new InvalidInformationException("No reservation with this id!");
-					}
+	public void addReservation(Reservation reservation) throws InvalidInformationException {
+		if (reservation != null) {
+			if (!this.reservations.containsKey(reservation.getDate())) {
+				this.reservations.put(reservation.getDate(), new ArrayList<>());
+			}
+			reservations.get(reservation.getDate()).add(reservation);
+		} else {
+			throw new InvalidInformationException("Invalid reservation datas!");
+		}
+	}
+
+	public void cancelReservation(Reservation reservation) throws InvalidInformationException {
+		if (reservation != null) {
+			List<Reservation> list = new ArrayList<>();
+			list = this.reservations.get(reservation.getDate());
+			for (int res = 0; res < list.size(); res++) {
+				if (reservation.getReservationID().equals(list.get(res).getReservationID())) {
+					this.reservations.get(reservation.getDate()).remove(res);
+				} else {
+					throw new InvalidInformationException("No reservation with this id!");
 				}
-			} else {
-				throw new InvalidInformationException("No reservations on this date!");
 			}
 		} else {
 			throw new InvalidInformationException("Invalid reservation details!");
@@ -166,18 +197,51 @@ public class Place implements Comparable<Place>{
 		return sum / rateCount;
 	}
 
+	public boolean isValidEmailAddress(String email) {
+		String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+		java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+		java.util.regex.Matcher m = p.matcher(email);
+		return m.matches();
+	}
+
 	// getters and setters
 	public boolean isRestaurant() {
 		return isRestaurant;
 	}
 
-	public String getCharacteristicOfPlace() {
-		return characteristicOfPlace;
+	public String getCharacteristicInput() {
+		return characteristicInput;
 	}
 
-	public void setCharacteristicOfPlace(String characteristicOfPlace) throws InvalidInformationException {
-		if (isValidString(characteristicOfPlace)) {
-			this.characteristicOfPlace = characteristicOfPlace;
+	public void addCharacteristicOfPlace(String characteristicOfPlace) throws InvalidInformationException {
+		if (characteristicOfPlace != null) {
+			this.characteristicOfPlace.add(characteristicOfPlace);
+			this.characteristicInput = String.join(", ", this.characteristicOfPlace);
+		} else {
+			throw new InvalidInformationException("Invalid enter of characteristic of place");
+		}
+	}
+
+	public void removeCharacteristicOfPlace(String characteristicOfPlace) throws InvalidInformationException {
+		if (characteristicOfPlace != null) {
+			this.characteristicOfPlace.remove(characteristicOfPlace);
+			this.characteristicInput = joinList(this.characteristicOfPlace);
+		} else {
+			throw new InvalidInformationException("Invalid enter of characteristic of place");
+		}
+	}
+
+	public String joinList(List<String> characteristicOfPlace) {
+		String string = String.join(", ", characteristicOfPlace);
+		return string;
+	}
+
+	// String format is: indian, bulgarian, sushi (with ", " between the strings)
+	public void setCharacteristicInput(String characteristicInput) throws InvalidInformationException {
+		if (isValidString(characteristicInput)) {
+			this.characteristicInput = characteristicInput;
+			this.characteristicOfPlace = Arrays.asList(characteristicInput.split(", "));
+
 		} else {
 			throw new InvalidInformationException("Please enter valid characteristic of the place");
 		}
@@ -237,10 +301,8 @@ public class Place implements Comparable<Place>{
 		return emailAddress;
 	}
 
-	// Trqbva nova validaciq za email, tazi v clasa userAdministration e prispobena
-	// za user
 	public void setEmailAddress(String emailAddress) throws InvalidInformationException {
-		if (UserAdministration.checkForValidEMail(emailAddress)) {
+		if (isValidEmailAddress(emailAddress)) {
 			this.emailAddress = emailAddress;
 		} else {
 			throw new InvalidInformationException("E-mail address is not correct!");
@@ -354,14 +416,27 @@ public class Place implements Comparable<Place>{
 	public LocalDateTime getDateAndTimeOfRegistration() {
 		return dateAndTimeOfRegistration;
 	}
+	
+
+	public int getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(int discount) throws InvalidInformationException {
+		if(discount > 0 && discount <= 100) {
+			this.discount = discount;
+		}else {
+			throw new InvalidInformationException("Please, enter a valid discount for the place (must be bigger than 0!)!");
+		}
+	}
 
 	@Override
 	public int compareTo(Place p2) {
 		double p1Rating = this.getAvgRating();
 		double p2Rating = p2.getAvgRating();
-		if(!(p2Rating==p1Rating)) {
+		if (!(p2Rating == p1Rating)) {
 			return (int) (p2Rating - p1Rating);
-		} else 
+		} else
 			return p2.getName().compareTo(this.getName());
 	}
 

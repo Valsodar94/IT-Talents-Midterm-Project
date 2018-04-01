@@ -8,12 +8,10 @@ import java.util.List;
 
 import exceptions.InvalidDateException;
 import exceptions.InvalidInformationException;
-import places.City;
 import places.Place;
 import services.Event;
 import services.Offer;
 import services.Reservation;
-import website.Website;
 
 public abstract class UserAdministration {
 	private static boolean isLogged;
@@ -64,11 +62,11 @@ public abstract class UserAdministration {
 			throw new InvalidInformationException("Login neuspeshen! Veche ima vpisan potrebitel");
 		}
 	}
-
+	//without extraOptions
 	public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, User user, Place place) {
+			String locationPref, User user, Place place) {
 		try {
-			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place);
+			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, user, place);
 			//Adding reservation to the user's reservations
 			r.getUser().addReservation(r);
 			//Adding reservation to the place's reservations
@@ -77,11 +75,24 @@ public abstract class UserAdministration {
 			e.printStackTrace();
 		}
 	}
-	
+	//with extraOptions
+		public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
+				String locationPref, String extraOptions, User user, Place place) {
+			try {
+				Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, extraOptions, user, place);
+				//Adding reservation to the user's reservations
+				r.getUser().addReservation(r);
+				//Adding reservation to the place's reservations
+				r.getPlace().addReservation(r);
+			} catch (InvalidInformationException | InvalidDateException e) {
+				e.printStackTrace();
+			}
+		}
+	//without extraOptions, with offer
 	public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, User user, Place place, Offer offer) {
+			String locationPref, User user, Place place, Offer offer) {
 		try {
-			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place, offer);
+			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, user, place, offer);
 			//Adding reservation to the user's reservations
 			r.getUser().addReservation(r);
 			//Adding reservation to the place's reservations
@@ -90,11 +101,11 @@ public abstract class UserAdministration {
 			e.printStackTrace();
 		}
 	}
-	
+	//without extraOptions, with event
 	public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, User user, Place place, Event event) {
+			String locationPref, User user, Place place, Event event) {
 		try {
-			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place, event);
+			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, user, place, event);
 			//Adding reservation to the user's reservations
 			r.getUser().addReservation(r);
 			//Adding reservation to the place's reservations
@@ -103,11 +114,11 @@ public abstract class UserAdministration {
 			e.printStackTrace();
 		}
 	}
-	
+	//with extraOptions and offer
 	public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, String extraOptions, User user, Place place, Offer offer) {
+			String locationPref, String extraOptions, User user, Place place, Offer offer) {
 		try {
-			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, extraOptions, user, place, offer);
+			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, extraOptions, user, place, offer);
 			//Adding reservation to the user's reservations
 			r.getUser().addReservation(r);
 			//Adding reservation to the place's reservations
@@ -116,11 +127,11 @@ public abstract class UserAdministration {
 			e.printStackTrace();
 		}
 	}
-	
+	//with extraOptions and event
 	public static void makeReservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, String extraOptions, User user, Place place, Event event) {
+			String locationPref, String extraOptions, User user, Place place, Event event) {
 		try {
-			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, extraOptions, user, place, event);
+			Reservation r = new Reservation(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, extraOptions, user, place, event);
 			//Adding reservation to the user's reservations
 			r.getUser().addReservation(r);
 			//Adding reservation to the place's reservations

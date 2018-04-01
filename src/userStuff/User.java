@@ -26,8 +26,8 @@ public class User {
 	private List<Comment> comments;
 	private List<Reservation> pastReservations;
 
-	protected User(String firstName, String lastName, String city, String emailAdress, String password,
-			String phoneNumber, LocalDate birthday) throws InvalidInformationException {
+	public User(String firstName, String lastName, String city, String emailAdress, String password, String phoneNumber,
+			LocalDate birthday) throws InvalidInformationException {
 		if (checkForValidString(firstName)) {
 			if (checkForValidString(lastName)) {
 				// Da se dobavi kachestvena proverka za city s exception + systoto za birtday
@@ -57,7 +57,6 @@ public class User {
 		this.pastReservations = new ArrayList<>();
 
 	}
-	
 
 	public void changePassword(String newPassword, String oldPassword) {
 		try {
@@ -157,22 +156,42 @@ public class User {
 		if (r != null && myReservations.contains(r)) {
 			myReservations.remove(r);
 			Place place = r.getPlace();
-			LocalDateTime date = r.getDateAndTime();
-			place.cancelReservation(r, date);
+			place.cancelReservation(r);
 			System.out.println("Your reservation has been canceled successfully!");
 		} else {
 			throw new InvalidInformationException("Not existing reservation!");
 		}
 	}
-	
-	//napravih za edit na imeto no trqbva i za drugite poleta da se napravi
-	public void editReservation(Reservation r, LocalDateTime date) throws InvalidInformationException, InvalidDateException {
+
+	// napravih za edit na imeto no trqbva i za drugite poleta da se napravi
+	public void editReservation(Reservation r, LocalDateTime date)
+			throws InvalidInformationException, InvalidDateException {
 		if (r != null && myReservations.contains(r)) {
-			//makeReservation
+			// makeReservation
 			cancelReservation(r);
-			//addReservation
+			// addReservation
 		} else {
 			throw new InvalidInformationException("Not existing reservation!");
+		}
+	}
+
+	public void leaveComment(Reservation r, String description, int rating) throws InvalidInformationException {
+		if (r != null && description != null && rating > 0 && rating < 6) {
+			if (this.pastReservations.contains(r) && r.getPlace().doesContainReservation(r)) {
+				if (!r.isHasLeftComment()) {
+					try {
+						Comment comment = new Comment(description, rating, r.getUser(), r.getPlace());
+						this.comments.add(comment);
+						r.getPlace().addComment(comment);
+					} catch (InvalidInformationException e) {
+						e.printStackTrace();
+					}
+				}
+			}else {
+				throw new InvalidInformationException("Cannot leave comment to this reservation!");
+			}
+		} else {
+			throw new InvalidInformationException("Invalid input!");
 		}
 	}
 
@@ -298,6 +317,5 @@ public class User {
 	protected List<Reservation> getPastReservations() {
 		return this.pastReservations;
 	}
-
 
 }

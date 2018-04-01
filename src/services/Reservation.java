@@ -1,5 +1,6 @@
 package services;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -10,20 +11,21 @@ import places.Place;
 import userStuff.User;
 
 public class Reservation {
+	private boolean hasLeftComment = false;
 	private String reservationID;
 	private LocalDateTime dateAndTimeOfReservation;
 	private int numberOfPeople;
 	private int numberOfChildren;
 	private String locationPref;
-	private int discount;
 	private String extraOptions;
 	private User user;
 	private final Place place;
 	private Offer offer;
 	private Event event;
 
+	//without extraOptions
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, User user, Place place)
+			String locationPref, User user, Place place)
 			throws InvalidInformationException, InvalidDateException {
 
 		this.reservationID = generateReservationID();
@@ -31,7 +33,6 @@ public class Reservation {
 		setNumberOfPeople(numberOfPeople);
 		setNumberOfChildren(numberOfChildren);
 		setlocationPref(locationPref);
-		setDiscount(discount);
 		if (user != null) {
 			this.user = user;
 		} else {
@@ -44,39 +45,40 @@ public class Reservation {
 		}
 	}
 
+	//with ExtraOptions
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, String extraOptions, User user, Place place)
+			String locationPref, String extraOptions, User user, Place place)
 			throws InvalidInformationException, InvalidDateException {
-		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place);
+		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, user, place);
 		setExtraOptions(extraOptions);
 	}
-
+	//without ExtraOptions, with event
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, User user, Place place, Event event)
+			String locationPref, User user, Place place, Event event)
 			throws InvalidInformationException, InvalidDateException {
-		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place);
+		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, user, place);
 		setEvent(event);
 	}
-
+	//with ExtraOptions, with event
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, String extraOptions, User user, Place place, Event event)
+			String locationPref, String extraOptions, User user, Place place, Event event)
 			throws InvalidInformationException, InvalidDateException {
-		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, extraOptions, user,
+		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, extraOptions, user,
 				place);
 		setEvent(event);
 	}
-
+	//without ExtraOptions, with offer
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, User user, Place place, Offer offer)
+			String locationPref, User user, Place place, Offer offer)
 			throws InvalidInformationException, InvalidDateException {
-		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, user, place);
+		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, user, place);
 		setOffer(offer);
 	}
-
+	//with ExtraOptions, with offer
 	public Reservation(LocalDateTime dateAndTimeOfReservation, int numberOfPeople, int numberOfChildren,
-			String locationPref, int discount, String extraOptions, User user, Place place, Offer offer)
+			String locationPref, String extraOptions, User user, Place place, Offer offer)
 			throws InvalidInformationException, InvalidDateException {
-		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, discount, extraOptions, user,
+		this(dateAndTimeOfReservation, numberOfPeople, numberOfChildren, locationPref, extraOptions, user,
 				place);
 		setOffer(offer);
 	}
@@ -96,13 +98,10 @@ public class Reservation {
 
 	public void listReservationInfo() {
 		System.out.println("Reservation:");
-		System.out.println("Date: " + this.dateAndTimeOfReservation.getDayOfMonth() + "/"
-				+ this.dateAndTimeOfReservation.getMonthValue() + "/" + this.dateAndTimeOfReservation.getYear());
+		System.out.println("Date: " + this.dateAndTimeOfReservation.toLocalDate());
 		System.out.println("Adults: " + this.numberOfPeople);
 		System.out.println("Children: " + this.numberOfChildren);
-		System.out.println(
-				"Time: " + this.dateAndTimeOfReservation.getHour() + ":" + this.dateAndTimeOfReservation.getMinute());
-		System.out.println("Discount: " + this.getDiscount() + "%");
+		System.out.println("Time: " + this.dateAndTimeOfReservation.toLocalTime());
 		System.out.println("Reservation number: " + this.reservationID);
 		System.out.println("Place: " + this.locationPref);
 		if (this.extraOptions != null) {
@@ -118,6 +117,12 @@ public class Reservation {
 
 	// getters and setters
 
+	public LocalDate getDate() {
+		return dateAndTimeOfReservation.toLocalDate();
+	}
+	public LocalTime getTime() {
+		return dateAndTimeOfReservation.toLocalTime();
+	}
 	public LocalDateTime getDateAndTime() {
 		return dateAndTimeOfReservation;
 	}
@@ -196,17 +201,6 @@ public class Reservation {
 		}
 	}
 
-	public int getDiscount() {
-		return discount;
-	}
-
-	public void setDiscount(int discount) throws InvalidInformationException {
-		if (discount > 0) {
-			this.discount = discount;
-		} else {
-			throw new InvalidInformationException("Discount must be bigger than 0 %.");
-		}
-	}
 
 	public String getExtraOptions() {
 		return extraOptions;
@@ -232,4 +226,13 @@ public class Reservation {
 		return place;
 	}
 
+	public boolean isHasLeftComment() {
+		return hasLeftComment;
+	}
+
+	public void setHasLeftComment(boolean hasLeftComment) {
+		this.hasLeftComment = hasLeftComment;
+	}
+
+	
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import enums.Cities;
+import exceptions.InvalidInformationException;
 import places.Place;
 import userStuff.User;
 
@@ -16,23 +17,7 @@ public class Comment {
 	private final User user;
 	private final Place place;
 
-	public Comment(int rating, User user, Place place) throws Exception {
-		this.date = LocalDate.now();
-		this.hour = LocalTime.now();
-		setRating(rating);
-		if (user != null) {
-			this.user = user;
-		} else {
-			throw new Exception();
-		}
-		if (place != null) {
-			this.place = place;
-		} else {
-			throw new Exception();
-		}
-	}
-
-	public Comment(String description, int rating, User user, Place place) throws Exception {
+	public Comment(String description, int rating, User user, Place place) throws InvalidInformationException {
 		this.date = LocalDate.now();
 		this.hour = LocalTime.now();
 		setDescription(description);
@@ -40,18 +25,18 @@ public class Comment {
 		if (user != null) {
 			this.user = user;
 		} else {
-			throw new Exception();
+			throw new InvalidInformationException("Invalid user!");
 		}
 		if (place != null) {
 			this.place = place;
 		} else {
-			throw new Exception();
+			throw new InvalidInformationException("Invalid place!");
 		}
 	}
 
 	// getters and setters
 	public void setDescription(String description) {
-		if (description != null && description.trim().length() > 0) {
+		if (description != null) {
 			this.description = description;
 		}
 	}
