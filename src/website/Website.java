@@ -71,7 +71,6 @@ public class Website {
 		}
 	}
 	
-	//popravi si metoda
 	public void showPlaces(String city,boolean isRestaurant, int num) {
 		if(city!=null) {
 			if(num>0) {
