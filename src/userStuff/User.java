@@ -3,6 +3,7 @@ package userStuff;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import exceptions.InvalidDateException;
 import exceptions.InvalidInformationException;
@@ -19,7 +20,6 @@ public class User {
 	private String password;
 	private String phoneNumber;
 	private LocalDate birthday;
-	private Website website;
 
 	private List<Reservation> myReservations;
 	private List<Place> favouritePlaces;
@@ -153,43 +153,56 @@ public class User {
 	}
 
 	// za otkazvane na rezervaciq
-	public void cancelReservation(Reservation r) throws InvalidInformationException {
-		if (r != null && myReservations.contains(r)) {
-			myReservations.remove(r);
-			Place place = r.getPlace();
-			place.cancelReservation(r);
-			System.out.println("Your reservation has been canceled successfully!");
+	public void cancelReservation(String reservationID) throws InvalidInformationException {
+		if (reservationID != null && myReservations.size()>0) {
+			Iterator<Reservation> it = myReservations.iterator();
+			while(it.hasNext()) {
+				Reservation r = it.next();
+				if(r.getReservationID().equals(reservationID)) {
+					Place place = r.getPlace();
+					place.cancelReservation(r);
+					it.remove();
+					System.out.println("Your reservation has been canceled successfully!");
+				}
+			}
+			
 		} else {
 			throw new InvalidInformationException("Not existing reservation!");
 		}
 	}
 
 	// napravih za edit na imeto no trqbva i za drugite poleta da se napravi
-	public void editReservation(Reservation r, LocalDateTime date)
+	public void editReservation(String reservationId, LocalDateTime date)
 			throws InvalidInformationException, InvalidDateException {
-		if (r != null && myReservations.contains(r)) {
+		if (reservationId != null) {
 			// makeReservation
-			cancelReservation(r);
+			cancelReservation(reservationId);
 			// addReservation
 		} else {
 			throw new InvalidInformationException("Not existing reservation!");
 		}
 	}
-
-	public void leaveComment(Reservation r, String description, int rating) throws InvalidInformationException {
-		if (r != null && description != null && rating > 0 && rating < 6) {
-			if (this.pastReservations.contains(r) && r.getPlace().doesContainReservation(r)) {
-				if (!r.isHasLeftComment()) {
-					try {
-						Comment comment = new Comment(description, rating, r.getUser(), r.getPlace());
-						this.comments.add(comment);
-						r.getPlace().addComment(comment);
-					} catch (InvalidInformationException e) {
-						e.printStackTrace();
+// nqma nyjda da proverqvame dali mqstoto sydyrza reservaciqta, tyi kato e greshka v coda ako ne q.
+	public void leaveComment(String reservationId, String description, int rating) throws InvalidInformationException {
+		if (reservationId != null && description != null && rating > 0 && rating < 6) {
+			if(myReservations.size()>0) {
+				Iterator<Reservation> it = myReservations.iterator();
+				while(it.hasNext()) {
+					Reservation r = it.next();
+					if(r.getReservationID().equals(reservationId)) {
+						if (!r.isHasLeftComment()) {
+							try {
+								Comment comment = new Comment(description, rating, r.getUser(), r.getPlace());
+								this.comments.add(comment);
+								r.getPlace().addComment(comment);
+							} catch (InvalidInformationException e) {
+								e.printStackTrace();
+							}
+						} else {
+							throw new InvalidInformationException("Cannot leave comment to this reservation!");
+						}
 					}
 				}
-			}else {
-				throw new InvalidInformationException("Cannot leave comment to this reservation!");
 			}
 		} else {
 			throw new InvalidInformationException("Invalid input!");

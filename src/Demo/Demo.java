@@ -4,8 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
+
 import exceptions.InvalidInformationException;
 import places.City;
+import places.Place;
+import userStuff.Admin;
 import userStuff.User;
 import userStuff.UserAdministration;
 import website.Website;
@@ -41,6 +44,15 @@ public class Demo {
 			case 4:
 				showEvents();
 				break;
+			case 5:
+				getReservationDetailsAndMakeReservation();
+				break;
+			case 6:
+				cancelReservation();
+				break;
+			case 7:
+				leaveAComment();
+				break;
 			case 8:
 				makeRegistration();
 				break;
@@ -57,12 +69,126 @@ public class Demo {
 			case 12:
 				deleteProfile();
 				break;
+			case 93:
+				updateWebsiteInfo();
+				break;
+			case 94:
+				updateWebsiteFAQ();
+				break;
+			case 95:
+				updateWebsiteContacts();
+				break;
 			default: continue;
 			}
-			
 		}
-			
 	}
+	private static void leaveAComment() throws InvalidInformationException {
+		System.out.println("Enter the reservation id of the reservation you want to comment");
+		String reservationID = sc.next();
+		System.out.println("Enter your comment for the place: ");
+		String comment = sc.nextLine();
+		System.out.println("Now enter your rating (1-6).");
+		int rating = sc.nextInt();
+		User u = UserAdministration.getU();
+		u.leaveComment(reservationID, comment, rating);
+	}
+	private static void cancelReservation() {
+		System.out.println("Enter the reservationId of the reservation you want to cancel");
+		String reservationID = sc.next();
+		User u = UserAdministration.getU();
+		try {
+			u.cancelReservation(reservationID);
+		} catch (InvalidInformationException e) {
+			System.out.println("No such reservation. Enter 1 if you want to enter another reservationID and any other number to exit.");
+			int nmb = getAnswer();
+			if(nmb ==1)
+				cancelReservation();
+			else
+				return;
+		}
+	}
+	private static void getReservationDetailsAndMakeReservation() {
+		Place place = getPlaceIfExists();
+		if(place.equals(null))
+			return;
+		int nmbOfChildren = 0;
+		if(place.isRestaurant())
+			System.out.println("Enter the number of children for the reservation");
+			nmbOfChildren = getNumberOfPeople();
+		LocalDateTime dateAndTimeOfReservation = getDateTime();
+		System.out.println("Enter the number of people for the reservation");
+		int nmbOfPeople = getNumberOfPeople();
+		String locationPref = pickLocationPref(place);
+		makeReservation(place, nmbOfChildren,nmbOfPeople, dateAndTimeOfReservation, locationPref);
+	}
+	
+	private static void makeReservation(Place place, int nmbOfChildren, int nmbOfPeople,
+			LocalDateTime dateAndTimeOfReservation, String locationPref) {
+		UserAdministration.makeReservation(dateAndTimeOfReservation, nmbOfPeople, nmbOfChildren, locationPref, UserAdministration.getU(), place);
+		
+	}
+	private static String pickLocationPref(Place p) {
+		showLocationPrefOptions(p);
+		System.out.println("Type the name of the option you want");
+		String locationPref = sc.next();
+		for(String s: p.getLocationPrefs()) {
+			if(locationPref.equals(s))
+				return locationPref;
+		}
+		System.out.println("This option for location pref doesn't exist. A random location pref is chosen for you.");
+		return p.getLocationPrefs().get((int) (Math.random()*p.getLocationPrefs().size()));
+	}
+	private static void showLocationPrefOptions(Place p) {
+		System.out.println("This are the location options you have for this place: ");
+		for(String s: p.getLocationPrefs()) {
+			System.out.println(p);
+		}
+	}
+	private static void showOffersAndEventsInPlace(Place place) {
+//		a for-each to go through all offers and events in this Place
+	}
+	private static int getNumberOfPeople() {
+		return sc.nextInt();
+	}
+//	probably make a universal check in Reservation class to see if the DateTime is valid
+	private static LocalDateTime getDateTime() {
+		System.out.println("Enter the month of the reservation: ");
+		int month = sc.nextInt();
+		System.out.println("Enter the day of the reservation: ");
+		int day = sc.nextInt();
+		System.out.println("Enter hour of reservation: ");
+		int hour = sc.nextInt();
+		return LocalDateTime.of(2018, month, day, hour, 0);
+		
+	}
+	private static int getAnswer() {
+		return sc.nextInt();
+	}
+// to replace the name check with a better one?
+	private static Place getPlaceIfExists(){
+		String placeName = getPlaceName();
+		for(Place p: Website.getWebsite().getAllRestaurants(UserAdministration.getU())) {
+			if(p.getName().equals(placeName)) {
+				return p;
+			}
+		}
+		for(Place p: Website.getWebsite().getAllClubs(UserAdministration.getU())) {
+			if(p.getName().equals(placeName)) {
+				return p;
+			}
+		}
+		System.out.println("There is no place with such name in our system. Please check the name!");
+		System.out.println("Would you like to enter another name or exit the reservation menu?");
+		System.out.println("Enter 1 for another name and anything else for exit.");
+		int answer = getAnswer();
+		if(answer == 1)
+			getPlaceIfExists();
+		return null;
+	}
+	private static String getPlaceName() {
+		System.out.println("Please enter the name of the restaurant or club you want to reserve in: ");
+		return sc.next();		
+	}		
 	private static void showEvents() {
 		System.out.println("For which city would you like to see the scheduled events? ");
 		String city = sc.next();
@@ -110,18 +236,9 @@ public class Demo {
 				currentUser.changeMobileNumber(password, phoneNumber);
 				break;
 			case 7:
-				LocalDate birthday = getBirtday();
+				LocalDate birthday = getBirthday();
 				password = getPassword();
 				currentUser.changeBirthday(password, birthday);
-				break;
-			case 93:
-				updateWebsiteInfo();
-				break;
-			case 94:
-				updateWebsiteFAQ();
-				break;
-			case 95:
-				updateWebsiteContacts();
 				break;
 			default:
 				System.out.println("Ne beshe izbrana nito edna opciq za promqna na profil, vryshtane v glavnoto menu.");
@@ -154,10 +271,10 @@ public class Demo {
 		System.out.println("Type: 2, to look at the clubs we have to offer");
 		System.out.println("Type: 3, to look at the offers we have available");
 		System.out.println("Type: 4, to look at the scheduled events");
-		System.out.println("Type 5, to make a reservation");
-		System.out.println("Type 6, to cancel reserrvation");
-		System.out.println("Type 7, to leave a comment of a past reservation");
 		if(!(UserAdministration.isLogged())) {
+			System.out.println("Type 5, to make a reservation");
+			System.out.println("Type 6, to cancel reserrvation");
+			System.out.println("Type 7, to leave a comment of a past reservation");
 			System.out.println("Type 8, to register");
 			System.out.println("Type 9, to log in");
 		}else {
@@ -198,7 +315,7 @@ public class Demo {
 		String emailAdress = getEmail();
 		String password = getPassword(); 
 		String phoneNumber = getPhoneNumber(); 
-		LocalDate birthday = getBirtday();
+		LocalDate birthday = getBirthday();
 		boolean isAdmin = isAdmin();
 		String adminPass = null;
 		if(isAdmin) 
@@ -224,8 +341,8 @@ public class Demo {
 	}
 
 
-	private static LocalDate getBirtday() {
-		System.out.println("Type your birthday.");
+	private static LocalDate getBirthday() {
+		System.out.println("Enter you birth date.");
 		System.out.println("Day : ");
 		int day = sc.nextInt();
 		System.out.println("Month: ");
@@ -294,7 +411,6 @@ public class Demo {
 	}
 //	to make a collection containing all cities with Places and iterate it here showing it to the user.
 	private static void showCities(boolean isRestaurant) {
-		
 		
 	}
 
