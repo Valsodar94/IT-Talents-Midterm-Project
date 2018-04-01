@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -438,6 +439,14 @@ public class Place implements Comparable<Place> {
 			return (int) (p2Rating - p1Rating);
 		} else
 			return p2.getName().compareTo(this.getName());
+	}
+
+	public List<String> getLocationPrefs() {
+		return Collections.unmodifiableList(locationPrefs);
+	}
+
+	public List<ExtraReservationOptions> getExtraReservationOptions() {
+		return Collections.unmodifiableList(extraReservationOptions);
 	}
 
 }
