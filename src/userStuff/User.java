@@ -19,7 +19,6 @@ public class User {
 	private String password;
 	private String phoneNumber;
 	private LocalDate birthday;
-	private Website website;
 
 	private List<Reservation> myReservations;
 	private List<Place> favouritePlaces;

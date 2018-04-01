@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import exceptions.InvalidInformationException;
 import places.City;
+import places.Place;
 import userStuff.User;
 import userStuff.UserAdministration;
 import website.Website;
@@ -41,6 +42,8 @@ public class Demo {
 			case 4:
 				showEvents();
 				break;
+			case 5:
+				getReservationDetails();
 			case 8:
 				makeRegistration();
 				break;
@@ -63,6 +66,61 @@ public class Demo {
 		}
 			
 	}
+	private static void getReservationDetails() {
+		Place place = getPlaceIfExists();
+		if(place.equals(null))
+			return;
+		int nmbOfChildren = 0;
+		if(place.isRestaurant())
+			System.out.println("Enter the number of children for the reservation");
+			nmbOfChildren = getNumberOfPeople();
+		LocalDateTime dateAndTimeOfReservation = getDateTime();
+		System.out.println("Enter the number of people for the reservation");
+		int nmbOfPeople = getNumberOfPeople();
+		showOffersAndEventsInPlace(Place p);
+	}
+private static int getNumberOfPeople() {
+		return sc.nextInt();
+	}
+//	probably make a universal check in Reservation class to see if the DateTime is valid
+	private static LocalDateTime getDateTime() {
+		System.out.println("Enter the month of the reservation: ");
+		int month = sc.nextInt();
+		System.out.println("Enter the day of the reservation: ");
+		int day = sc.nextInt();
+		System.out.println("Enter hour of reservation: ");
+		int hour = sc.nextInt();
+		return LocalDateTime.of(2018, month, day, hour, 0);
+		
+	}
+	private static int getAnswer() {
+		return sc.nextInt();
+	}
+// to replace the name check with a better one?
+	private static Place getPlaceIfExists(){
+		String placeName = getPlaceName();
+		for(Place p: Website.getWebsite().getAllRestaurants(UserAdministration.getU())) {
+			if(p.getName().equals(placeName)) {
+				return p;
+			}
+		}
+		for(Place p: Website.getWebsite().getAllClubs(UserAdministration.getU())) {
+			if(p.getName().equals(placeName)) {
+				return p;
+			}
+		}
+		System.out.println("There is no place with such name in our system. Please check the name!");
+		System.out.println("Would you like to enter another name or exit the reservation menu?");
+		System.out.println("Enter 1 for another name and anything else for exit.");
+		int answer = getAnswer();
+		if(answer == 1)
+			getPlaceIfExists();
+		return null;
+	}
+	private static String getPlaceName() {
+		System.out.println("Please enter the name of the restaurant or club you want to reserve in: ");
+		return sc.next();		
+	}		
 	private static void showEvents() {
 		System.out.println("For which city would you like to see the scheduled events? ");
 		String city = sc.next();
@@ -110,7 +168,7 @@ public class Demo {
 				currentUser.changeMobileNumber(password, phoneNumber);
 				break;
 			case 7:
-				LocalDate birthday = getBirtday();
+				LocalDate birthday = getBirthday();
 				password = getPassword();
 				currentUser.changeBirthday(password, birthday);
 				break;
@@ -156,8 +214,8 @@ public class Demo {
 		System.out.println("Type: 4, to look at the scheduled events");
 		System.out.println("Type 5, to make a reservation");
 		System.out.println("Type 6, to cancel reserrvation");
-		System.out.println("Type 7, to leave a comment of a past reservation");
 		if(!(UserAdministration.isLogged())) {
+			System.out.println("Type 7, to leave a comment of a past reservation");
 			System.out.println("Type 8, to register");
 			System.out.println("Type 9, to log in");
 		}else {
@@ -198,7 +256,7 @@ public class Demo {
 		String emailAdress = getEmail();
 		String password = getPassword(); 
 		String phoneNumber = getPhoneNumber(); 
-		LocalDate birthday = getBirtday();
+		LocalDate birthday = getBirthday();
 		boolean isAdmin = isAdmin();
 		String adminPass = null;
 		if(isAdmin) 
@@ -224,8 +282,8 @@ public class Demo {
 	}
 
 
-	private static LocalDate getBirtday() {
-		System.out.println("Type your birthday.");
+	private static LocalDate getBirthday() {
+		System.out.println("Enter you birth date.");
 		System.out.println("Day : ");
 		int day = sc.nextInt();
 		System.out.println("Month: ");
@@ -294,7 +352,6 @@ public class Demo {
 	}
 //	to make a collection containing all cities with Places and iterate it here showing it to the user.
 	private static void showCities(boolean isRestaurant) {
-		
 		
 	}
 

@@ -112,7 +112,6 @@ public class Website {
 			}
 		}
 	}
-	
 
 	//	nujni sa systite metodi za clubs i restaurants. Otdelno trqbva da se napravi po oste 1 overload method za nachin na sortirane(default da byde po reiting)
 	
