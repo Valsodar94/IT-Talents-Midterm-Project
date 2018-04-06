@@ -2,8 +2,9 @@ package Demo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Scanner;
-
+import java.util.Set;
 
 import exceptions.InvalidInformationException;
 import places.City;
@@ -392,8 +393,8 @@ public class Demo {
 	private static void showOptionsForClubsDesplay() {
 		System.out.println("Great choice! Now choose one of the following, so you can only"
 				+ " look at the clubs you are interested in");
-		System.out.println("This is the list of the cities we have clubs for booking.");
-		System.out.println("Please type the name of the city in which you look for a club");
+		System.out.println("This is the list of the cities we have clubs for booking:");
+		
 	}
 
 
@@ -406,12 +407,27 @@ public class Demo {
 	private static void showOptionsForRestaurantDesplay() {
 		System.out.println("Great choice! Now choose one of the following, so you can only"
 				+ " look at the restaurants you are interested in");
-		System.out.println("This is the list of the cities we have restaurants for booking.");
-		System.out.println("Please type the name of the city in which you look for a restaurant");
+		System.out.println("This is the list of the cities we have restaurants for booking:");
 	}
 //	to make a collection containing all cities with Places and iterate it here showing it to the user.
 	private static void showCities(boolean isRestaurant) {
-		
+		Website w = Website.getWebsite();
+		for(City c: w.getAllCities(null)) {
+			if(isRestaurant) {
+				if(c.getRestaurants().size()>0) {
+					System.out.println(c.getName());
+				}
+			} else {
+				if(c.getClubs().size()>0) {
+					System.out.println(c.getName());
+				}
+			}
+		}
+		if(isRestaurant)
+			System.out.println("In which of the above cities would you like to see our Restaurants? ");
+		else
+			System.out.println("In which of the above cities would you like to see our Clubs? ");
+
 	}
 
 	private static String getCityName() {

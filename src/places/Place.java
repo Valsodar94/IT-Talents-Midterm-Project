@@ -477,17 +477,10 @@ public class Place implements Comparable<Place> {
 		}
 	}
 	
-	public List<String> getLocationPrefs() {
-		return new ArrayList<>(locationPrefs);
-	}
-
 	public void setLocationPrefs(List<String> locationPrefs) {
 		this.locationPrefs = new ArrayList<>(locationPrefs);;
 	}
 
-	public List<ExtraReservationOptions> getExtraReservationOptions() {
-		return new ArrayList<ExtraReservationOptions>(extraReservationOptions);
-	}
 
 	public void setExtraReservationOptions(List<ExtraReservationOptions> extraReservationOptions) {
 		this.extraReservationOptions = new ArrayList<ExtraReservationOptions>(extraReservationOptions);;
