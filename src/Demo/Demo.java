@@ -1,12 +1,20 @@
 package Demo;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Scanner;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import exceptions.InvalidInformationException;
 import places.City;
 import places.Place;
+import threads.ReservationChecker;
 import userStuff.User;
 import userStuff.UserAdministration;
 import website.Website;
@@ -16,71 +24,90 @@ public class Demo {
 	private static final String WELCOME_MESSAGE = "Welcome in our site ";
 
 	public static void main(String[] args) throws InvalidInformationException {
-
-		Website w = Website.getWebsite();
-		System.out.println(WELCOME_MESSAGE);
-		while (true) {
-			showAvailableOptions();
-			int answer = receiveACommandFromTheUser();
-			switch (answer) {
-			case 1:
-				showOptionsForRestaurantDesplay();
-				showCities(true);
-				String name = getCityName();
-				int num = getNmbOfPlacesToShow();
-				Website.getWebsite().showPlaces(name, true, num);
-				break;
-			case 2:
-				showOptionsForClubsDesplay();
-				showCities(false);
-				name = getCityName();
-				num = getNmbOfPlacesToShow();
-				Website.getWebsite().showPlaces(name, false, num);
-				break;
-			case 3:
-				showOffers();
-				break;
-			case 4:
-				showEvents();
-				break;
-			case 5:
-				getReservationDetailsAndMakeReservation();
-				break;
-			case 6:
-				cancelReservation();
-				break;
-			case 7:
-				leaveAComment();
-				break;
-			case 8:
-				makeRegistration();
-				break;
-			case 9:
-				logIn();
-				break;
-			case 10:
-				UserAdministration.logout();
-				break;
-			case 11:
-				int optionNmb = changeProfileOptions();
-				changeTheChosenOption(optionNmb);
-				break;
-			case 12:
-				deleteProfile();
-				break;
-			case 93:
-				updateWebsiteInfo();
-				break;
-			case 94:
-				updateWebsiteFAQ();
-				break;
-			case 95:
-				updateWebsiteContacts();
-				break;
-			default:
-				continue;
+		try {
+			Website w = Website.getWebsite();
+			// reservation checker
+			Thread checker = new ReservationChecker(w);
+			checker.setDaemon(true);
+			checker.start();
+			//
+			System.out.println(WELCOME_MESSAGE);
+			while (true) {
+				showAvailableOptions();
+				int answer = receiveACommandFromTheUser();
+				switch (answer) {
+				case 1:
+					showOptionsForRestaurantDesplay();
+					showCities(true);
+					String name = getCityName();
+					int num = getNmbOfPlacesToShow();
+					Website.getWebsite().showPlaces(name, true, num);
+					break;
+				case 2:
+					showOptionsForClubsDesplay();
+					showCities(false);
+					name = getCityName();
+					num = getNmbOfPlacesToShow();
+					Website.getWebsite().showPlaces(name, false, num);
+					break;
+				case 3:
+					showOffers();
+					break;
+				case 4:
+					showEvents();
+					break;
+				case 5:
+					getReservationDetailsAndMakeReservation();
+					break;
+				case 6:
+					cancelReservation();
+					break;
+				case 7:
+					leaveAComment();
+					break;
+				case 8:
+					makeRegistration();
+					break;
+				case 9:
+					logIn();
+					break;
+				case 10:
+					UserAdministration.logout();
+					break;
+				case 11:
+					int optionNmb = changeProfileOptions();
+					changeTheChosenOption(optionNmb);
+					break;
+				case 12:
+					deleteProfile();
+					break;
+				case 93:
+					updateWebsiteInfo();
+					break;
+				case 94:
+					updateWebsiteFAQ();
+					break;
+				case 95:
+					updateWebsiteContacts();
+					break;
+				default:
+					continue;
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			e.getMessage();
+		} finally {
+
 		}
+	}
+	//Dobavi i opciq exit sait
+	private static void exitSite(Website w) {
+		w.citiesToJson();
+		w.clubsToJson();
+		w.restaurantsToJson();
+		UserAdministration.usersToJson();
+		return;
 	}
 
 	private static void leaveAComment() throws InvalidInformationException {
@@ -328,7 +355,6 @@ public class Demo {
 		UserAdministration.login(password, email);
 	}
 
-	// ne vijdam smisul da iskash druga parola za admin
 	private static User makeRegistration() throws InvalidInformationException {
 		String firstName = getFirstName();
 		String lastName = getLastName();

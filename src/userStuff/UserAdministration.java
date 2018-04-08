@@ -1,5 +1,6 @@
 package userStuff;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import places.Place;
 import services.Event;
 import services.Offer;
 import services.Reservation;
+import website.Website;
 
 public abstract class UserAdministration {
 	private static boolean isLogged;
@@ -46,7 +48,6 @@ public abstract class UserAdministration {
 							System.out.println("Login uspeshen");
 							isLogged = true;
 							currentUser = user;
-							refreshPresentAndPastReservations();
 						} else {
 							throw new InvalidInformationException("Login neuspeshen! Nepravilna parola!");
 						}
@@ -141,7 +142,8 @@ public abstract class UserAdministration {
 		}
 	}
 
-	private static void refreshPresentAndPastReservations() {
+	//dublira se s reservation checker
+	/*public static void refreshPresentAndPastReservations() {
 		LocalDateTime now = LocalDateTime.now();
 		Iterator<Reservation> it = currentUser.getMyReservations().iterator();
 		while(it.hasNext()) {
@@ -151,6 +153,11 @@ public abstract class UserAdministration {
 				it.remove();
 			}
 		}
+	}*/
+	
+	public static void usersToJson() {
+		File users = new File("JsonFiles" + File.separator + "users.json");
+		Website.writeToJson(allUsers, users);
 	}
 
 	public static void logout() {

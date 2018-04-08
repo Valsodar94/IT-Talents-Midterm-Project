@@ -1,14 +1,18 @@
 package threads;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import places.Place;
 import services.Reservation;
+import userStuff.UserAdministration;
 import website.Website;
 
-public class ReservationChecker implements Runnable {
+public class ReservationChecker extends Thread {
 
+	private static final int RESERVATION_DURATION = 120;
 	Website website;
 
 	public ReservationChecker(Website website) {
@@ -31,8 +35,27 @@ public class ReservationChecker implements Runnable {
 
 	@Override
 	public void run() {
-		List<Reservation> allReservations = sumAllReservations();
-		
+		while (true) {
+			try {
+				// checks for past reservations every 2h
+				Thread.sleep(2 * 60 * 60 * 1000);
+				List<Reservation> allReservations = sumAllReservations();
+				System.out.println("Cheking for past reservations...");
+				for (Reservation res : allReservations) {
+					LocalTime currentTime = LocalTime.now();
+					long elapsedMinutes = Duration.between(res.getTime(), currentTime).toMinutes();
+					if (elapsedMinutes >= RESERVATION_DURATION) {
+						System.out.println("Reservation " + res.getReservationID() + " is passed!");
+						res.getPlace().increaseCurrentCapacity();
+						res.getPlace().removeReservation(res);
+						res.getUser().removeReservation(res);
+					}
+				}
+			} catch (InterruptedException e) {
+				return;
+			}
+
+		}
 	}
 
 }

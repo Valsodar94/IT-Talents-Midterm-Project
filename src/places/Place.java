@@ -131,6 +131,12 @@ public class Place implements Comparable<Place> {
 			throw new InvalidInformationException("Invalid reservation datas!");
 		}
 	}
+	
+	public void removeReservation(Reservation reservation) {
+		if(reservation != null) {
+			this.reservations.remove(reservation);
+		}
+	}
 
 	public void cancelReservation(Reservation reservation) throws InvalidInformationException {
 		if (reservation != null) {
@@ -298,7 +304,6 @@ public class Place implements Comparable<Place> {
 		} else {
 			throw new InvalidInformationException("Please enter a valid city name");
 		}
-		// Should add it to the collection with the cities!
 	}
 
 	public String getCity() {
@@ -315,7 +320,6 @@ public class Place implements Comparable<Place> {
 		} else {
 			throw new InvalidInformationException("Please enter a valid region");
 		}
-		// Should add it to the regions of the city.
 	}
 
 	public String getName() {
@@ -444,6 +448,10 @@ public class Place implements Comparable<Place> {
 
 	public int getCurrentCapacity() {
 		return currentCapacity;
+	}
+	
+	public void increaseCurrentCapacity() {
+		this.currentCapacity++;
 	}
 
 	public int getMaxCapacity() {

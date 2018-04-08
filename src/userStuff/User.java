@@ -152,6 +152,12 @@ public class User {
 			this.myReservations.add(r);
 		}
 	}
+	
+	public void removeReservation(Reservation reservation) {
+		if(reservation != null) {
+			this.myReservations.remove(reservation);
+		}
+	}
 
 	// za otkazvane na rezervaciq
 	public void cancelReservation(String reservationID) throws InvalidInformationException {
@@ -172,7 +178,6 @@ public class User {
 		}
 	}
 
-// nqma nyjda da proverqvame dali mqstoto sydyrza reservaciqta, tyi kato e greshka v coda ako ne q.
 	public void leaveComment(String reservationId, String description, int rating) throws InvalidInformationException {
 		if (reservationId != null && description != null && rating > 0 && rating < 6) {
 			if(myReservations.size()>0) {

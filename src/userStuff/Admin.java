@@ -1,5 +1,6 @@
 package userStuff;
 
+import java.io.File;
 import java.time.LocalDate;
 
 import exceptions.InvalidInformationException;

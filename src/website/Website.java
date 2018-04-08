@@ -1,10 +1,17 @@
 package website;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import places.City;
 import places.Place;
@@ -32,6 +39,32 @@ public class Website {
 		allOffers = new TreeSet<>();
 		allClubs = new TreeSet<>();
 		allCities = new HashSet<>();
+	}
+
+	public void citiesToJson() {
+		File cities = new File("JsonFiles" + File.separator + "cities.json");
+		writeToJson(this.allCities, cities);
+	}
+	
+	public void clubsToJson() {
+		File clubs = new File("JsonFiles" + File.separator + "clubs.json");
+		writeToJson(this.allClubs, clubs);
+	}
+	
+	public void restaurantsToJson() {
+		File restaurants = new File("JsonFiles" + File.separator + "restaurants.json");
+		writeToJson(this.allClubs, restaurants);
+	}
+	
+	public static void writeToJson(Collection collection, File file) {
+		try (FileWriter writer = new FileWriter(file);) {
+			GsonBuilder builder = new GsonBuilder();
+			Gson gson = builder.setPrettyPrinting().create();
+			writer.write(gson.toJson(collection));
+		} catch (IOException e) {
+			System.out.println("Ops, sorry! The information is not saved to the file!");
+			e.printStackTrace();
+		}
 	}
 
 	private Website(String infoForTheWebstie) {
@@ -161,8 +194,8 @@ public class Website {
 		else
 			return Collections.unmodifiableSet(allRestaurants);
 	}
-	
-	public ArrayList<Place> getAllRestaurants(){
+
+	public ArrayList<Place> getAllRestaurants() {
 		return new ArrayList<Place>(this.allRestaurants);
 	}
 
@@ -172,8 +205,8 @@ public class Website {
 		else
 			return Collections.unmodifiableSet(allClubs);
 	}
-	
-	public ArrayList<Place> getAllClubs(){
+
+	public ArrayList<Place> getAllClubs() {
 		return new ArrayList<Place>(this.allClubs);
 	}
 

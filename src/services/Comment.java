@@ -3,15 +3,15 @@ package services;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import enums.Cities;
 import exceptions.InvalidInformationException;
+import places.City;
 import places.Place;
 import userStuff.User;
 
 public class Comment {
 	private final LocalDate date;
 	private final LocalTime hour;
-	private Cities city;
+	private City city;
 	private String description;
 	private int rating;
 	private final User user;
@@ -48,7 +48,7 @@ public class Comment {
 	}
 	
 
-	public Cities getCity() {
+	public City getCity() {
 		return city;
 	}
 
