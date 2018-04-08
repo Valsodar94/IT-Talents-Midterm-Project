@@ -24,6 +24,7 @@ public class Admin extends User{
 					System.out.println("The restaurant has been added.");
 					Website.getWebsite().getAllRestaurants(this).add(p);
 					addPlaceCityIfNotPresent(p.getCity());
+					addRestaurantInCityRestaurants(p);
 				}
 				else {
 					throw new InvalidInformationException("The restaurant is already added in our system");
@@ -33,6 +34,7 @@ public class Admin extends User{
 					System.out.println("The club has been added.");
 					Website.getWebsite().getAllClubs(this).add(p);
 					addPlaceCityIfNotPresent(p.getCity());
+					addClubInCityClubs(p);
 				}
 				else
 					throw new InvalidInformationException("The club is already added in our system");
@@ -52,6 +54,7 @@ public class Admin extends User{
 				else {
 					System.out.println("The restaurant has been sucessfully removed.");
 					Website.getWebsite().getAllRestaurants(this).remove(p);
+					removeRestaurantFromCityRestaurants(p);
 				}
 			} else {
 				if(!(Website.getWebsite().getAllClubs(this).contains(p))) {
@@ -60,6 +63,7 @@ public class Admin extends User{
 				else {
 					System.out.println("The club has been sucessfully removed.");
 					Website.getWebsite().getAllClubs(this).remove(p);
+					removeClubFromCityClubs(p);
 				}
 			}
 		}
@@ -74,6 +78,7 @@ public class Admin extends User{
 			} else {
 				System.out.println("The event has been added!");
 				Website.getWebsite().getAllEvents(this).add(e);
+				addEventInCityEvents(e);
 			}
 		} else 
 			throw new InvalidInformationException("Podavash null za event!");
@@ -84,6 +89,7 @@ public class Admin extends User{
 			if(Website.getWebsite().getAllEvents(this).contains(e)) {
 				System.out.println("The event has been removed!");
 				Website.getWebsite().getAllEvents(this).remove(e);
+				removeEventFromCityEvents(e);
 			} else {
 				throw new InvalidInformationException("The event is not present in our system, nothing to remove");
 			}
@@ -99,6 +105,7 @@ public class Admin extends User{
 			} else {
 				System.out.println("The offer has been added!");
 				Website.getWebsite().getAllOffers(this).add(o);
+				addOfferInCityOffers(o);
 			}
 		} else
 			throw new InvalidInformationException("Podavash null za offer");
@@ -109,6 +116,7 @@ public class Admin extends User{
 			if(Website.getWebsite().getAllOffers(this).contains(o)) {
 				System.out.println("The offer is already present in the system.");
 				Website.getWebsite().getAllOffers(this).remove(o);
+				removeOfferFromCityOffers(o);
 			} else {
 				throw new InvalidInformationException("The offer does not exist in our system, nothing to remove.");
 			}
@@ -129,7 +137,60 @@ public class Admin extends User{
 			Website.getWebsite().getAllCities(this).add(newCity);
 		}
 	}
-	
-
-
+	private void addRestaurantInCityRestaurants(Place p) {
+		for(City c: Website.getWebsite().getAllCities(this)) {
+			if(c.getName().equals(p.getName())) {
+				c.addRestaurant(p);
+			}
+		}
+	}
+	private void addClubInCityClubs(Place p) {
+		for(City c: Website.getWebsite().getAllCities(this)) {
+			if(c.getName().equals(p.getName())) {
+				c.addClub(p);
+			}
+		}
+	}
+	private void removeRestaurantFromCityRestaurants(Place p) {
+		for(City c: Website.getWebsite().getAllCities(this)) {
+			if(c.getName().equals(p.getName())) {
+				c.removeRestaurant(p);
+			}
+		}
+	}
+	private void removeClubFromCityClubs(Place p) {
+		for(City c: Website.getWebsite().getAllCities(this)) {
+			if(c.getName().equals(p.getName())) {
+				c.removeClub(p);
+			}
+		}
+	}
+	private void addOfferInCityOffers(Offer o) {
+		for(City c: Website.getWebsite().getAllCities(this)) {
+			if(c.getName().equals(o.getPlace().getName())) {
+				c.addOffer(o);
+			}
+		}
+	}
+	private void removeOfferFromCityOffers(Offer o) {
+		for(City c: Website.getWebsite().getAllCities(this)) {
+			if(c.getName().equals(o.getPlace().getName())) {
+				c.removeOffer(o);
+			}
+		}
+	}
+	private void addEventInCityEvents(Event e) {
+		for(City c: Website.getWebsite().getAllCities(this)) {
+			if(c.getName().equals(e.getPlace().getName())) {
+				c.addEvent(e);
+			}
+		}
+	}
+	private void removeEventFromCityEvents(Event e) {
+		for(City c: Website.getWebsite().getAllCities(this)) {
+			if(c.getName().equals(e.getPlace().getName())) {
+				c.removeEvent(e);
+			}
+		}
+	}
 }
