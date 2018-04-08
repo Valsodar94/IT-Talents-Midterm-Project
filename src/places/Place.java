@@ -486,8 +486,14 @@ public class Place implements Comparable<Place> {
 			this.extraReservationOptions = new ArrayList<ExtraReservationOptions>(extraReservationOptions);
 		}
 	}
-	
-	
+
+	public ArrayList<Reservation> getAllReservations() {
+		ArrayList<Reservation>allReservations = new ArrayList<Reservation>();
+		for(LocalDate date: this.reservations.keySet()) {
+			allReservations.addAll(this.reservations.get(date));
+		}
+		return allReservations;
+	}
 
 	public List<String> getCharacteristicOfPlace() {
 		return Collections.unmodifiableList(characteristicOfPlace);
