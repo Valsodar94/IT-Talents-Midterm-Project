@@ -6,9 +6,7 @@ import java.util.Scanner;
 
 
 import exceptions.InvalidInformationException;
-import places.City;
 import places.Place;
-import userStuff.Admin;
 import userStuff.User;
 import userStuff.UserAdministration;
 import website.Website;
@@ -18,6 +16,7 @@ public class Demo {
 	private static final String WELCOME_MESSAGE = "Welcome in our site ";
 
 	public static void main(String[] args) throws InvalidInformationException {
+		
 		Website w = Website.getWebsite();
 		System.out.println(WELCOME_MESSAGE);
 		while(true) {
@@ -307,7 +306,7 @@ public class Demo {
 		UserAdministration.login(password, email);
 	}
 	
-
+	//ne vijdam smisul da iskash druga parola za admin
 	private static User makeRegistration() throws InvalidInformationException {
 		String firstName = getFirstName();
 		String lastName = getLastName();
@@ -325,13 +324,13 @@ public class Demo {
 
 
 	private static String getAdminPass() {
-		System.out.println("Type the admin password: ");
+		System.out.println("Type the admin password: (must be at least five characters)");
 		return sc.nextLine();
 	}
 
 
 	private static boolean isAdmin() {
-		System.out.println("Are you going to be an admin(You require admin password for this)");
+		System.out.println("Are you going to be an admin(Required admin password for this)");
 		System.out.println("Type yes or no");
 		String answer = sc.next();
 		if(answer.equalsIgnoreCase("yes"))
@@ -360,7 +359,7 @@ public class Demo {
 
 
 	private static String getPassword() {
-		System.out.println("Type your password");
+		System.out.println("Type your password: (must be at least five characters)");
 		return sc.next();
 	}
 

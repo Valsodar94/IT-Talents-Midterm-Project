@@ -156,11 +156,11 @@ public abstract class UserAdministration {
 	public static void logout() {
 
 		if(currentUser!=null) {
-			System.out.println("Logout successful?");
+			System.out.println("Logout successful.");
 			currentUser=null;
 			isLogged = false;
 		} else {
-			System.out.println("Nqma vpisan potrebitel, kakyv logout iskash?");
+			System.out.println("You are not logged in!");
 		}
 	}
 	
@@ -181,16 +181,16 @@ public abstract class UserAdministration {
 				if (eMail.contains("@")) {
 					for (User u : allUsers) {
 						if (u.getEmailAdress().equals(eMail)) {
-							throw new InvalidInformationException("Veche ima potrebitel s takyv meil!");
+							throw new InvalidInformationException("You already have a registration with this e-mail!");
 						}
 					}
 					return true;
 				} else
-					throw new InvalidInformationException("Email-a ti e nevaliden! Ne sydyrzha @");
+					throw new InvalidInformationException("Invalid e-mail! It must contain @!");
 			} else
-				throw new InvalidInformationException("Nevaliden email!");
+				throw new InvalidInformationException("Invalid input for e-mail!");
 		} else
-			throw new InvalidInformationException("Podavash mi null za email...");
+			throw new InvalidInformationException("Missing input...");
 
 	}
 

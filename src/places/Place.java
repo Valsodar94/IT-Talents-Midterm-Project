@@ -52,8 +52,8 @@ public class Place implements Comparable<Place> {
 
 	public Place(String name, String address, String emailAddress, boolean isRestaurant, String characteristicInput,
 			String city, String region, String avgCost, LocalTime startHour, LocalTime closeHour, int maxCapacity,
-			List<String> locationPrefs, List<ExtraReservationOptions> extraReservationOptions)
-			throws InvalidInformationException {
+			List<String> locationPrefs, List<ExtraReservationOptions> extraReservationOptions) throws InvalidInformationException {
+
 		setName(name);
 		setAddress(address);
 		setEmailAddress(emailAddress);
@@ -61,13 +61,11 @@ public class Place implements Comparable<Place> {
 		setCharacteristicInput(characteristicInput);
 		setCity(city);
 		setRegion(region);
-		dateAndTimeOfRegistration = LocalDateTime.now();
 		setAvgCost(avgCost);
 		setStartHour(startHour);
 		setCloseHour(closeHour);
 		setMaxCapacity(maxCapacity);
-
-		this.characteristicOfPlace = new ArrayList<>();
+		dateAndTimeOfRegistration = LocalDateTime.now();
 		this.reservations = new TreeMap<LocalDate, List<Reservation>>();
 		this.comments = new ArrayList<Comment>();
 		this.ratings = new ArrayList<Integer>();
@@ -220,7 +218,7 @@ public class Place implements Comparable<Place> {
 			throw new InvalidInformationException("Event cannot be add! Invalid input!");
 		}
 	}
-	
+
 	public void removeEvent(Event event) throws InvalidInformationException {
 		if (event != null) {
 			if (this.events.contains(event)) {
@@ -230,7 +228,7 @@ public class Place implements Comparable<Place> {
 			throw new InvalidInformationException("Event cannot be deleted! Invalid input!");
 		}
 	}
-	
+
 	public void addOffer(Offer offer) throws InvalidInformationException {
 		if (offer != null) {
 			if (!this.offers.contains(offer)) {
@@ -240,7 +238,7 @@ public class Place implements Comparable<Place> {
 			throw new InvalidInformationException("Offer cannot be add! Invalid input!");
 		}
 	}
-	
+
 	public void removeOffer(Offer offer) throws InvalidInformationException {
 		if (offer != null) {
 			if (this.offers.contains(offer)) {
@@ -476,21 +474,23 @@ public class Place implements Comparable<Place> {
 					"Please, enter a valid discount for the place (must be bigger than 0!)!");
 		}
 	}
-	
-	public List<String> getLocationPrefs() {
-		return new ArrayList<>(locationPrefs);
-	}
 
 	public void setLocationPrefs(List<String> locationPrefs) {
-		this.locationPrefs = new ArrayList<>(locationPrefs);;
-	}
-
-	public List<ExtraReservationOptions> getExtraReservationOptions() {
-		return new ArrayList<ExtraReservationOptions>(extraReservationOptions);
+		if (locationPrefs != null) {
+			this.locationPrefs = new ArrayList<>(locationPrefs);
+		}
 	}
 
 	public void setExtraReservationOptions(List<ExtraReservationOptions> extraReservationOptions) {
-		this.extraReservationOptions = new ArrayList<ExtraReservationOptions>(extraReservationOptions);;
+		if (extraReservationOptions != null) {
+			this.extraReservationOptions = new ArrayList<ExtraReservationOptions>(extraReservationOptions);
+		}
+	}
+	
+	
+
+	public List<String> getCharacteristicOfPlace() {
+		return Collections.unmodifiableList(characteristicOfPlace);
 	}
 
 	@Override

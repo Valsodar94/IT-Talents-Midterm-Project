@@ -37,6 +37,12 @@ public class User {
 						if (checkForValidPassword(password)) {
 							if (checkForValidPhoneNumber(phoneNumber)) {
 								if (birthday != null) {
+									this.firstName = firstName;
+									this.lastName = lastName;
+									this.city = city;
+									this.emailAdress = emailAdress;
+									this.password = password;
+									this.birthday = birthday;
 								}
 							}
 						}
@@ -45,12 +51,7 @@ public class User {
 			}
 		}
 		System.out.println("Registration sucessfull!");
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.city = city;
-		this.emailAdress = emailAdress;
-		this.password = password;
-		this.birthday = birthday;
+		
 		this.myReservations = new ArrayList<>();
 		this.favouritePlaces = new ArrayList<>();
 		this.placesJournal = new ArrayList<>();
@@ -171,17 +172,6 @@ public class User {
 		}
 	}
 
-	// napravih za edit na imeto no trqbva i za drugite poleta da se napravi
-	public void editReservation(String reservationId, LocalDateTime date)
-			throws InvalidInformationException, InvalidDateException {
-		if (reservationId != null) {
-			// makeReservation
-			cancelReservation(reservationId);
-			// addReservation
-		} else {
-			throw new InvalidInformationException("Not existing reservation!");
-		}
-	}
 // nqma nyjda da proverqvame dali mqstoto sydyrza reservaciqta, tyi kato e greshka v coda ako ne q.
 	public void leaveComment(String reservationId, String description, int rating) throws InvalidInformationException {
 		if (reservationId != null && description != null && rating > 0 && rating < 6) {

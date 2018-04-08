@@ -49,7 +49,7 @@ public class Website {
 	}
 	
 	public static Website getWebsite() {
-		if(web.equals(null))
+		if(web == null)
 			return new Website();
 		else
 			return web;
