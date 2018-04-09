@@ -1,14 +1,25 @@
 package userStuff;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
+
 import exceptions.InvalidDateException;
 import exceptions.InvalidInformationException;
+import places.City;
 import places.Place;
 import services.Event;
 import services.Offer;
@@ -34,8 +45,28 @@ public abstract class UserAdministration {
 		}
 		else {
 			User u = new User(phoneNumber, phoneNumber, city, phoneNumber, phoneNumber, phoneNumber, birthday);
-			allUsers.add(u);
+			UserAdministration.allUsers.add(u);
 			return u;
+		}
+	}
+	
+	public static void usersFromJson() {
+		File file = new File("JsonFiles"+File.separator+"users.json");
+		System.out.println("Loading user data...");
+		
+		try (Reader reader = new FileReader(file);){
+			Gson gson =  new Gson();		
+			JsonElement json = gson.fromJson(reader, JsonElement.class);
+		    String result = gson.toJson(json);
+			
+			Type setType = new TypeToken<ArrayList<User>>(){}.getType();
+			allUsers = gson.fromJson(result, setType);
+			
+		} catch (FileNotFoundException e) {
+			System.out.println("This file does not exist!");
+			e.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	}
 

@@ -1,8 +1,11 @@
 package website;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +15,9 @@ import java.util.TreeSet;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 
 import places.City;
 import places.Place;
@@ -54,6 +60,25 @@ public class Website {
 	public void restaurantsToJson() {
 		File restaurants = new File("JsonFiles" + File.separator + "restaurants.json");
 		writeToJson(this.allClubs, restaurants);
+	}
+	
+	public void citiesFromJson() {
+		File file = new File("JsonFiles"+File.separator+"cities.json");
+		
+		try (Reader reader = new FileReader(file);){
+			Gson gson =  new Gson();		
+			JsonElement json = gson.fromJson(reader, JsonElement.class);
+		    String result = gson.toJson(json);
+			
+			Type setType = new TypeToken<HashSet<City>>(){}.getType();
+			this.allCities = gson.fromJson(result, setType);
+			
+		} catch (FileNotFoundException e) {
+			System.out.println("This file does not exist!");
+			e.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	public static void writeToJson(Collection collection, File file) {

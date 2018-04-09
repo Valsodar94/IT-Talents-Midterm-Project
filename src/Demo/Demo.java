@@ -26,6 +26,7 @@ public class Demo {
 	public static void main(String[] args) throws InvalidInformationException {
 		try {
 			Website w = Website.getWebsite();
+			loadData();
 			// reservation checker
 			Thread checker = new ReservationChecker(w);
 			checker.setDaemon(true);
@@ -90,6 +91,9 @@ public class Demo {
 				case 95:
 					updateWebsiteContacts();
 					break;
+				case 99:
+					exitSite(w);
+					break;
 				default:
 					continue;
 				}
@@ -101,13 +105,17 @@ public class Demo {
 
 		}
 	}
-	//Dobavi i opciq exit sait
+	//Dobavi i opciq exit sait kato case
 	private static void exitSite(Website w) {
 		w.citiesToJson();
 		w.clubsToJson();
 		w.restaurantsToJson();
 		UserAdministration.usersToJson();
 		return;
+	}
+	
+	private static void loadData() {
+		UserAdministration.usersFromJson();
 	}
 
 	private static void leaveAComment() throws InvalidInformationException {
@@ -323,16 +331,19 @@ public class Demo {
 			System.out.println("Type 7, to leave a comment of a past reservation");
 			System.out.println("Type 8, to register");
 			System.out.println("Type 9, to log in");
+			System.out.println("Type 99, to exit website.");
 		} else {
 			if (UserAdministration.getU() instanceof User) {
 				System.out.println("Type 10, to logout");
 				System.out.println("Type 11, to change something in your profile(name, adress, etc.)");
 				System.out.println("Type 12, to delete your profile");
+				System.out.println("Type 99, to exit website.");
 				System.out.println();
 			} else {
 				System.out.println("Type 93, to update the info for the website");
 				System.out.println("Type 94 to update website's FAQ");
 				System.out.println("Type 95 to update the website's contacts");
+				System.out.println("Type 99, to exit website.");
 			}
 		}
 
