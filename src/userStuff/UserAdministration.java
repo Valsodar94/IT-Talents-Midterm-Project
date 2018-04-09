@@ -24,10 +24,10 @@ import services.Reservation;
 import website.Website;
 
 public abstract class UserAdministration {
-	private static boolean isLogged;
+	private static boolean isLogged = false;
 	public static List<User> allUsers = new ArrayList<>();
 	private static User currentUser;
-	private static String adminPass = "";
+	private static String adminPass = "admin";
 
 	public static User register(String firstName, String lastName, String city, String emailAdress, String password,
 			String phoneNumber, LocalDate birthday, boolean isAdmin, String adminPass)
@@ -37,13 +37,14 @@ public abstract class UserAdministration {
 				if (city != null) {
 					if (UserAdministration.checkForValidEMail(emailAdress)) {
 						if (checkForValidPassword(password)) {
-							if (checkForValidPhoneNumber(phoneNumber)) {				
+							if (checkForValidPhoneNumber(phoneNumber)) {
 								if (birthday != null) {
 									if (isAdmin) {
 										if (UserAdministration.adminPass.equals(adminPass)) {
-											System.out.println("Registration successful!");
+											System.out.println("Registration successful! Welcome our new admin!");
 											Admin a = new Admin(firstName, lastName, city, emailAdress, password,
 													phoneNumber, birthday);
+											a.setIsAdmin(true);
 											UserAdministration.allUsers.add(a);
 											return a;
 										} else
@@ -70,22 +71,21 @@ public abstract class UserAdministration {
 	}
 
 	public static void login(String email, String password) throws InvalidInformationException {
-		if (!isLogged) {
+		if (isLogged == false) {
 			if (password != null && email != null) {
 				for (User user : UserAdministration.allUsers) {
-					if (user.getEmailAdress().equals(email)) {
-						if (user.getPassword().equals(password)) {
+					if (user.getEmailAdress().equals(email.trim())) {
+						if (user.getPassword().equals(password.trim())) {
 							System.out.println("Login uspeshen");
 							isLogged = true;
-							currentUser = user;
+							UserAdministration.currentUser = user;
+							return;
 						} else {
 							throw new InvalidInformationException("Login neuspeshen! Nepravilna parola!");
 						}
-					} else {
-						throw new InvalidInformationException(
-								"Login neuspeshen! Nqma registriran potrebtiel na takyv email");
 					}
 				}
+				throw new InvalidInformationException("Login neuspeshen! Nqma registriran potrebtiel na takyv email");
 			} else {
 				throw new InvalidInformationException("Login neuspeshen! Podavash mi null za email/parola!");
 			}
@@ -202,7 +202,7 @@ public abstract class UserAdministration {
 			}.getType();
 			if (result != null && result.trim().length() > 0) {
 				UserAdministration.allUsers = gson.fromJson(result, setType);
-			}else {
+			} else {
 				System.out.println("Tuka e problema!!!");
 			}
 
@@ -213,7 +213,7 @@ public abstract class UserAdministration {
 			e1.printStackTrace();
 		}
 	}
-	
+
 	public static void logout() {
 
 		if (currentUser != null) {
@@ -248,7 +248,7 @@ public abstract class UserAdministration {
 					}
 				}
 				return true;
-			}else {
+			} else {
 				return true;
 			}
 		} else

@@ -12,17 +12,20 @@ import website.Website;
 
 public class Admin extends User{
 
-	protected Admin(String firstName, String lastName, String city, String emailAdress, String password,
+	public Admin(String firstName, String lastName, String city, String emailAdress, String password,
 			String phoneNumber, LocalDate birthday) throws InvalidInformationException {
 		super(firstName, lastName, city, emailAdress, password, phoneNumber, birthday);
 	}
 
 	public void addPlace(Place p) throws InvalidInformationException{
+
 		if(p!=null) {
 			if(p.isRestaurant()) {
 				if(!(Website.getWebsite().getAllRestaurants(this).contains(p))) {
 					System.out.println("The restaurant has been added.");
-					Website.getWebsite().getAllRestaurants(this).add(p);
+					Website.getWebsite().appendPlace(p);
+					//.getAllRestaurants(this).add(p);
+					System.out.println(Website.getWebsite().getAllRestaurants());
 					addPlaceCityIfNotPresent(p.getCity());
 					addRestaurantInCityRestaurants(p);
 				}

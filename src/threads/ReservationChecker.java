@@ -40,7 +40,6 @@ public class ReservationChecker extends Thread {
 				// checks for past reservations every 2h
 				Thread.sleep(2 * 60 * 60 * 1000);
 				List<Reservation> allReservations = sumAllReservations();
-				System.out.println("Cheking for past reservations...");
 				for (Reservation res : allReservations) {
 					LocalTime currentTime = LocalTime.now();
 					long elapsedMinutes = Duration.between(res.getTime(), currentTime).toMinutes();

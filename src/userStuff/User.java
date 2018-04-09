@@ -18,6 +18,7 @@ public class User {
 	private String city;
 	private String emailAdress;
 	private String password;
+	private boolean isAdmin = false;
 	private String phoneNumber;
 	private LocalDate birthday;
 
@@ -42,7 +43,7 @@ public class User {
 		this.comments = new ArrayList<>();
 		this.pastReservations = new ArrayList<>();
 
-	}
+	}			
 
 	public void changePassword(String newPassword, String oldPassword) {
 		try {
@@ -210,6 +211,15 @@ public class User {
 	private void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
+	
+	public boolean isAdmin() {
+		return this.isAdmin;
+	}
+
+	public void setIsAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
 
 	public String getLastName() {
 		return lastName;
@@ -228,7 +238,7 @@ public class User {
 	}
 
 	public String getEmailAdress() {
-		return emailAdress;
+		return emailAdress.trim();
 	}
 
 	private void setEmailAdress(String emailAdress) {
@@ -244,7 +254,7 @@ public class User {
 	}
 
 	public String getPassword() {
-		return this.password;
+		return this.password.trim();
 	}
 
 	protected List<Reservation> getMyReservations() {

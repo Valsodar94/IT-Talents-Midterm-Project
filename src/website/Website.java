@@ -258,14 +258,27 @@ public class Website {
 	}
 
 	public Set<Place> getAllRestaurants(User u) {
-		if (u instanceof Admin)
+		if (u.isAdmin())
 			return this.allRestaurants;
 		else
-			return Collections.unmodifiableSet(allRestaurants);
+			return new TreeSet<>(allRestaurants);
 	}
 
-	public ArrayList<Place> getAllRestaurants() {
-		return new ArrayList<Place>(this.allRestaurants);
+	public void appendPlace(Place p) {
+
+		if (p != null) {
+			if (p.isRestaurant()) {
+				this.allRestaurants.add(p);
+				System.out.println(allRestaurants);
+			} else {
+				this.allClubs.add(p);
+			}
+		}
+
+	}
+
+	public TreeSet<Place> getAllRestaurants() {
+		 return new TreeSet<>(allRestaurants);
 	}
 
 	public Set<Place> getAllClubs(User u) {
@@ -276,7 +289,7 @@ public class Website {
 	}
 
 	public ArrayList<Place> getAllClubs() {
-		return new ArrayList<Place>(this.allClubs);
+		return new ArrayList<>(allClubs);
 	}
 
 	public Set<Event> getAllEvents(User u) {
@@ -300,8 +313,8 @@ public class Website {
 			return Collections.unmodifiableSet(allCities);
 	}
 
-	public HashSet<City> getAllCities() {
-		return new HashSet<>(this.allCities);
+	public void getAllCities() {
+		System.out.println(this.allCities);
 	}
 
 }

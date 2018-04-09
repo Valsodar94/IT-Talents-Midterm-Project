@@ -5,6 +5,7 @@
     "city": "Sofia",
     "emailAdress": "IvanIvanov@gmail.com",
     "password": "123456",
+    "isAdmin": false,
     "phoneNumber": "0883335348",
     "birthday": {
       "year": 1986,
@@ -23,6 +24,7 @@
     "city": "Chirpan",
     "emailAdress": "kolio@mata.bg",
     "password": "123456",
+    "isAdmin": false,
     "phoneNumber": "0883433348",
     "birthday": {
       "year": 1990,
@@ -41,11 +43,31 @@
     "city": "Sofia",
     "emailAdress": "stasitodorova@abv.bg",
     "password": "873625",
+    "isAdmin": false,
     "phoneNumber": "0883562736",
     "birthday": {
       "year": 1987,
       "month": 11,
       "day": 25
+    },
+    "myReservations": [],
+    "favouritePlaces": [],
+    "placesJournal": [],
+    "comments": [],
+    "pastReservations": []
+  },
+  {
+    "firstName": "Admin",
+    "lastName": "Adminov",
+    "city": "Sofia",
+    "emailAdress": "admin@rezzo.bg",
+    "password": "123456",
+    "isAdmin": true,
+    "phoneNumber": "0878666666",
+    "birthday": {
+      "year": 1990,
+      "month": 1,
+      "day": 20
     },
     "myReservations": [],
     "favouritePlaces": [],

@@ -52,7 +52,8 @@ public class Place implements Comparable<Place> {
 
 	public Place(String name, String address, String emailAddress, boolean isRestaurant, String characteristicInput,
 			String city, String region, String avgCost, LocalTime startHour, LocalTime closeHour, int maxCapacity,
-			List<String> locationPrefs, List<ExtraReservationOptions> extraReservationOptions) throws InvalidInformationException {
+			List<String> locationPrefs, List<ExtraReservationOptions> extraReservationOptions)
+			throws InvalidInformationException {
 
 		setName(name);
 		setAddress(address);
@@ -131,9 +132,9 @@ public class Place implements Comparable<Place> {
 			throw new InvalidInformationException("Invalid reservation datas!");
 		}
 	}
-	
+
 	public void removeReservation(Reservation reservation) {
-		if(reservation != null) {
+		if (reservation != null) {
 			this.reservations.remove(reservation);
 		}
 	}
@@ -287,11 +288,11 @@ public class Place implements Comparable<Place> {
 		return string;
 	}
 
-	// String format is: indian, bulgarian, sushi (with ", " between the strings)
+	// String format is: indian,bulgarian,sushi (with "," between the strings)
 	public void setCharacteristicInput(String characteristicInput) throws InvalidInformationException {
 		if (isValidString(characteristicInput)) {
 			this.characteristicInput = characteristicInput;
-			this.characteristicOfPlace = Arrays.asList(characteristicInput.split(", "));
+			this.characteristicOfPlace = Arrays.asList(characteristicInput.split(","));
 
 		} else {
 			throw new InvalidInformationException("Please enter valid characteristic of the place");
@@ -449,7 +450,7 @@ public class Place implements Comparable<Place> {
 	public int getCurrentCapacity() {
 		return currentCapacity;
 	}
-	
+
 	public void increaseCurrentCapacity() {
 		this.currentCapacity++;
 	}
@@ -496,8 +497,8 @@ public class Place implements Comparable<Place> {
 	}
 
 	public ArrayList<Reservation> getAllReservations() {
-		ArrayList<Reservation>allReservations = new ArrayList<Reservation>();
-		for(LocalDate date: this.reservations.keySet()) {
+		ArrayList<Reservation> allReservations = new ArrayList<Reservation>();
+		for (LocalDate date : this.reservations.keySet()) {
 			allReservations.addAll(this.reservations.get(date));
 		}
 		return allReservations;
@@ -525,4 +526,8 @@ public class Place implements Comparable<Place> {
 		return Collections.unmodifiableList(extraReservationOptions);
 	}
 
+	@Override
+	public String toString() {
+		return "name: " + this.name;
+	}
 }

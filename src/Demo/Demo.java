@@ -2,9 +2,12 @@ package Demo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
-
+import enums.ExtraReservationOptions;
 import exceptions.InvalidInformationException;
 import places.City;
 import places.Place;
@@ -16,19 +19,12 @@ import website.Website;
 
 public class Demo {
 	static Scanner sc = new Scanner(System.in);
-	private static final String WELCOME_MESSAGE = "Welcome in our site ";
+	private static final String WELCOME_MESSAGE = "Welcome to our site ";
 
 	public static void main(String[] args){
 		try {
 			Website w = Website.getWebsite();
 			loadData(w);
-			//for me to check if json is working
-			System.out.println();
-			UserAdministration.getAllUsers();
-			w.getAllCities();
-			w.getAllClubs();
-			w.getAllRestaurants();
-			System.out.println();
 			// reservation checker
 			Thread checker = new ReservationChecker(w);
 			checker.setDaemon(true);
@@ -84,6 +80,9 @@ public class Demo {
 					break;
 				case 12:
 					deleteProfile();
+					break;
+				case 90:
+					addPlace();
 					break;
 				case 93:
 					updateWebsiteInfo();
@@ -325,6 +324,7 @@ public class Demo {
 	private static void updateWebsiteInfo() {
 		System.out.println("Enter the information you want to be shown as information for the website: ");
 		String info = sc.nextLine();
+		
 		Website.getWebsite().setInfoForTheWebstie(info);
 	}
 
@@ -340,6 +340,7 @@ public class Demo {
 			System.out.println("Type 99, to exit website.");
 		} else {
 			if (UserAdministration.getU() instanceof User) {
+				System.out.println("---USER OPTIONS---");
 				System.out.println("Type 5, to make a reservation");
 				System.out.println("Type 6, to cancel reserrvation");
 				System.out.println("Type 7, to leave a comment of a past reservation");
@@ -349,11 +350,12 @@ public class Demo {
 				System.out.println("Type 99, to exit website.");
 				System.out.println();
 
-				if(UserAdministration.getU() instanceof Admin) {
+				if(UserAdministration.getU().isAdmin()) {
+					System.out.println("---ADMINISTRATION OPTIONS---");
+					System.out.println("Type 90, to add a place.");
 					System.out.println("Type 93, to update the website's info.");
 					System.out.println("Type 94, to update the website's FAQ.");
 					System.out.println("Type 95, to update the website's contacts.");
-					System.out.println("Type 99, to exit website.");
 
 				}
 
@@ -407,8 +409,9 @@ public class Demo {
 	}
 
 	private static String getAdminPass() {
-		System.out.println("Type the admin password: (must be at least five characters)");
-		return sc.nextLine();
+		System.out.println("Type the admin password:");
+		String adminPassword = sc.next();
+		return adminPassword;
 	}
 
 	private static boolean isAdmin() {
@@ -523,6 +526,148 @@ public class Demo {
 		else
 			System.out.println("In which of the above cities would you like to see our Clubs? ");
 
+	}
+	
+	private static void addPlace() {
+		User currentUser = UserAdministration.getU();
+		
+		if(currentUser.isAdmin()) {
+			System.out.println("You are logged in as an admin! You can add a place to our system!");
+			
+			System.out.println("Enter name for the place: ");
+			String name = sc.next();
+			
+			while(!Place.isValidString(name)) {
+				System.out.println("Enter a new name: ");
+				name = sc.nextLine();
+			}
+		
+			
+			System.out.println("Enter address of this place: ");
+			String address = sc.next();
+
+			
+			System.out.println("Enter email of the place: ");
+			String email = sc.next();
+			
+			System.out.println("Is this place a restaurant: (true/false) ");
+			Boolean isRestaurant = sc.nextBoolean();
+			
+			
+			String charInput = null;
+			if(isRestaurant) {
+				System.out.println("Enter the kitchen types offered in your restaurant: (e.g Japanese,Bulgarian)");
+				charInput = sc.next();
+			}else {
+				System.out.println("Enter the music type in your club: (e.g Chalga, RnB)");
+				charInput = sc.nextLine();
+			}
+			
+			System.out.println("Enter city: ");
+			String city = sc.next();
+			
+			System.out.println("Enter the region in your city: (e.g Center, Drujba)");
+			String region = sc.next();
+			
+			System.out.println("Enter the average cost in your place: (e.g min/max)");
+			String avgCost = sc.next();
+			
+			System.out.println("Enter start of the working day for your place: ");
+			System.out.println("Enter hour: ");
+			int hours = sc.nextInt();
+			System.out.println("Enter minutes: ");
+			int min = sc.nextInt();
+			LocalTime startTime = LocalTime.of(hours, min);
+			
+			
+			System.out.println("Enter end of the working day for your place: ");
+			System.out.println("Enter hour: ");
+			int hoursEnd = sc.nextInt();
+			System.out.println("Enter minutes: ");
+			int minEnd = sc.nextInt();
+			LocalTime closeTime = LocalTime.of(hoursEnd, minEnd);
+			
+			System.out.println("Enter the capacity of your place: ");
+			int capacity = sc.nextInt();
+			
+			 List<String> locationPrefs = new ArrayList<>();
+			 System.out.println("Enter location preferences for your tables: ");
+			 boolean toContinue = true;
+			 String prefs = null;
+			 while(toContinue) {
+				 prefs = sc.nextLine();
+				 locationPrefs.add(prefs);
+				 sc.nextLine();
+				 System.out.println("Do you want to add more preferences? (yes/no)");
+				 String answer = sc.next();
+				 if(answer.equalsIgnoreCase("no")) {
+					 toContinue = false;
+				 }
+			 }
+
+			 
+			 List<ExtraReservationOptions> extraReservationOptions = new ArrayList<>();
+			 System.out.println("Enter extra reservation options for your place: ");
+			 System.out.println("Choose the desired numbers -> NEAR_TABLE (1), WITH_BABYCHAIR (2), WITH_PLACE_FOR_INVALIDS (3), NEAR_STAGE (4), "
+					 			+ "AT_THE_BAR (5), VIP_ZONE (6), HIGH_TABLE (7), SEPARE (8), STANDART_TABLE (9)");
+			 toContinue = true;
+			 int num = sc.nextInt();
+			 while(toContinue) {	 
+				 switch (num) {
+				case 1:
+					extraReservationOptions.add(ExtraReservationOptions.NEAR_TABLE);
+					break;
+				case 2:
+					extraReservationOptions.add(ExtraReservationOptions.WITH_BABYCHAIR);
+					break;
+				case 3:
+					extraReservationOptions.add(ExtraReservationOptions.WITH_PLACE_FOR_INVALIDS);
+					break;
+				case 4:
+					extraReservationOptions.add(ExtraReservationOptions.NEAR_STAGE);
+					break;
+				case 5:
+					extraReservationOptions.add(ExtraReservationOptions.AT_THE_BAR);
+					break;
+				case 6:
+					extraReservationOptions.add(ExtraReservationOptions.VIP_ZONE);
+					break;
+				case 7:
+					extraReservationOptions.add(ExtraReservationOptions.HIGH_TABLE);
+					break;
+				case 8:
+					extraReservationOptions.add(ExtraReservationOptions.SEPARE);
+					break;
+				case 9:
+					extraReservationOptions.add(ExtraReservationOptions.STANDART_TABLE);
+					break;
+
+				default:
+					break;
+				}
+
+				 System.out.println("Do you want to add more preferences? (yes/no)");
+				 String answer = sc.next();
+				 
+				 if(answer.equalsIgnoreCase("no")) {
+					 toContinue = false;
+				 }else {
+					 num = sc.nextInt();
+				 }
+			 }
+			
+
+			try {
+				Place p = new Place(name, address, email, isRestaurant, charInput, city, region, avgCost, startTime, closeTime, capacity, locationPrefs, extraReservationOptions);
+				
+				Admin a = new Admin(currentUser.getFirstName(), currentUser.getLastName(), currentUser.getCity(), currentUser.getEmailAdress(), "123456", currentUser.getPhoneNumber(), currentUser.getBirthday());
+				a.addPlace(p);
+				
+				System.out.println("This place was added to our website successfully!");
+			} catch (InvalidInformationException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private static String getCityName() {
