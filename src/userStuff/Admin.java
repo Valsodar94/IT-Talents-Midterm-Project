@@ -1,6 +1,5 @@
 package userStuff;
 
-import java.io.File;
 import java.time.LocalDate;
 
 import exceptions.InvalidInformationException;
@@ -9,7 +8,7 @@ import places.Place;
 import services.Event;
 import services.Offer;
 import website.Website;
-//to make a thread that clears events/offers at the beggining of each new date
+
 
 public class Admin extends User{
 

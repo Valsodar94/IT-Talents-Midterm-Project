@@ -1,0 +1,56 @@
+[
+  {
+    "firstName": "Ivan",
+    "lastName": "Ivanov",
+    "city": "Sofia",
+    "emailAdress": "IvanIvanov@gmail.com",
+    "password": "123456",
+    "phoneNumber": "0883335348",
+    "birthday": {
+      "year": 1986,
+      "month": 5,
+      "day": 8
+    },
+    "myReservations": [],
+    "favouritePlaces": [],
+    "placesJournal": [],
+    "comments": [],
+    "pastReservations": []
+  },
+  {
+    "firstName": "Kolio",
+    "lastName": "Kolev",
+    "city": "Chirpan",
+    "emailAdress": "kolio@mata.bg",
+    "password": "123456",
+    "phoneNumber": "0883433348",
+    "birthday": {
+      "year": 1990,
+      "month": 1,
+      "day": 20
+    },
+    "myReservations": [],
+    "favouritePlaces": [],
+    "placesJournal": [],
+    "comments": [],
+    "pastReservations": []
+  },
+  {
+    "firstName": "Stanislava",
+    "lastName": "Todorova",
+    "city": "Sofia",
+    "emailAdress": "stasitodorova@abv.bg",
+    "password": "873625",
+    "phoneNumber": "0883562736",
+    "birthday": {
+      "year": 1987,
+      "month": 11,
+      "day": 25
+    },
+    "myReservations": [],
+    "favouritePlaces": [],
+    "placesJournal": [],
+    "comments": [],
+    "pastReservations": []
+  }
+]

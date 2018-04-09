@@ -1,20 +1,15 @@
 package Demo;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import exceptions.InvalidInformationException;
 import places.City;
 import places.Place;
 import threads.ReservationChecker;
+import userStuff.Admin;
 import userStuff.User;
 import userStuff.UserAdministration;
 import website.Website;
@@ -23,17 +18,25 @@ public class Demo {
 	static Scanner sc = new Scanner(System.in);
 	private static final String WELCOME_MESSAGE = "Welcome in our site ";
 
-	public static void main(String[] args) throws InvalidInformationException {
+	public static void main(String[] args){
 		try {
 			Website w = Website.getWebsite();
-			loadData();
+			loadData(w);
+			//for me to check if json is working
+			System.out.println();
+			UserAdministration.getAllUsers();
+			w.getAllCities();
+			w.getAllClubs();
+			w.getAllRestaurants();
+			System.out.println();
 			// reservation checker
 			Thread checker = new ReservationChecker(w);
 			checker.setDaemon(true);
 			checker.start();
 			//
 			System.out.println(WELCOME_MESSAGE);
-			while (true) {
+			boolean wantToExit = false;
+			while (!wantToExit) {
 				showAvailableOptions();
 				int answer = receiveACommandFromTheUser();
 				switch (answer) {
@@ -92,7 +95,7 @@ public class Demo {
 					updateWebsiteContacts();
 					break;
 				case 99:
-					exitSite(w);
+					wantToExit = exitSite(w);
 					break;
 				default:
 					continue;
@@ -106,19 +109,21 @@ public class Demo {
 		}
 	}
 	//Dobavi i opciq exit sait kato case
-	private static void exitSite(Website w) {
+	private static boolean exitSite(Website w) {
 		w.citiesToJson();
 		w.clubsToJson();
 		w.restaurantsToJson();
 		UserAdministration.usersToJson();
-		return;
+		System.out.println("Saving all data to json...");
+		return true;
 	}
 	
-	private static void loadData() {
+	private static void loadData(Website w) {
 		UserAdministration.usersFromJson();
+		w.dataFromJson();
 	}
 
-	private static void leaveAComment() throws InvalidInformationException {
+	private static void leaveAComment(){
 		System.out.println("Enter the reservation id of the reservation you want to comment");
 		String reservationID = sc.next();
 		System.out.println("Enter your comment for the place: ");
@@ -126,7 +131,11 @@ public class Demo {
 		System.out.println("Now enter your rating (1-6).");
 		int rating = sc.nextInt();
 		User u = UserAdministration.getU();
-		u.leaveComment(reservationID, comment, rating);
+		try {
+			u.leaveComment(reservationID, comment, rating);
+		} catch (InvalidInformationException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	private static void cancelReservation() {
@@ -148,7 +157,7 @@ public class Demo {
 
 	private static void getReservationDetailsAndMakeReservation() {
 		Place place = getPlaceIfExists();
-		if (place.equals(null))
+		if (place == null)
 			return;
 		int nmbOfChildren = 0;
 		if (place.isRestaurant())
@@ -326,24 +335,28 @@ public class Demo {
 		System.out.println("Type: 3, to look at the offers we have available");
 		System.out.println("Type: 4, to look at the scheduled events");
 		if (!(UserAdministration.isLogged())) {
-			System.out.println("Type 5, to make a reservation");
-			System.out.println("Type 6, to cancel reserrvation");
-			System.out.println("Type 7, to leave a comment of a past reservation");
 			System.out.println("Type 8, to register");
 			System.out.println("Type 9, to log in");
 			System.out.println("Type 99, to exit website.");
 		} else {
 			if (UserAdministration.getU() instanceof User) {
+				System.out.println("Type 5, to make a reservation");
+				System.out.println("Type 6, to cancel reserrvation");
+				System.out.println("Type 7, to leave a comment of a past reservation");
 				System.out.println("Type 10, to logout");
 				System.out.println("Type 11, to change something in your profile(name, adress, etc.)");
 				System.out.println("Type 12, to delete your profile");
 				System.out.println("Type 99, to exit website.");
 				System.out.println();
-			} else {
-				System.out.println("Type 93, to update the info for the website");
-				System.out.println("Type 94 to update website's FAQ");
-				System.out.println("Type 95 to update the website's contacts");
-				System.out.println("Type 99, to exit website.");
+
+				if(UserAdministration.getU() instanceof Admin) {
+					System.out.println("Type 93, to update the website's info.");
+					System.out.println("Type 94, to update the website's FAQ.");
+					System.out.println("Type 95, to update the website's contacts.");
+					System.out.println("Type 99, to exit website.");
+
+				}
+
 			}
 		}
 
@@ -360,13 +373,19 @@ public class Demo {
 		return sc.nextInt();
 	}
 
-	private static void logIn() throws InvalidInformationException {
-		String password = getPassword();
-		String email = getEmail();
-		UserAdministration.login(password, email);
+	private static void logIn(){
+		System.out.println("Enter your email: ");
+		String email = sc.next();
+		System.out.println("Enter your password: ");
+		String password = sc.next();
+		try {
+			UserAdministration.login(email, password);
+		} catch (InvalidInformationException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
-	private static User makeRegistration() throws InvalidInformationException {
+	private static void makeRegistration(){
 		String firstName = getFirstName();
 		String lastName = getLastName();
 		String city = getCity();
@@ -378,8 +397,13 @@ public class Demo {
 		String adminPass = null;
 		if (isAdmin)
 			adminPass = getAdminPass();
-		return UserAdministration.register(firstName, lastName, city, emailAdress, password, phoneNumber, birthday,
-				isAdmin, adminPass);
+		try {
+			UserAdministration.register(firstName, lastName, city, emailAdress, password, phoneNumber, birthday,
+					isAdmin, adminPass);
+		} catch (InvalidInformationException e) {
+			System.out.println("Registration unsuccessful! ");
+			System.out.println(e.getMessage());
+		}
 	}
 
 	private static String getAdminPass() {
@@ -399,43 +423,67 @@ public class Demo {
 
 	private static LocalDate getBirthday() {
 		System.out.println("Enter you birth date.");
-		System.out.println("Day : ");
-		int day = sc.nextInt();
-		System.out.println("Month: ");
-		int month = sc.nextInt();
-		System.out.println("Year: ");
-		int year = sc.nextInt();
+		int day = 0;
+		while(day <1||day>365) {
+			System.out.println("Day: ");
+			day = sc.nextInt();
+		}
+		int month = 0;
+		while(month<1||month>12) {
+			System.out.println("Month: ");
+			month = sc.nextInt();
+		}
+		int year = -1;
+		while(year < 0) {
+			System.out.println("Year: ");
+			year = sc.nextInt();
+		}
 		return LocalDate.of(year, month, day);
 	}
 
 	private static String getPhoneNumber() {
-		System.out.println("Type your phone number");
-		return sc.next();
+		System.out.println("Type your phoneNumber");
+		String phoneNumber = sc.next();
+		return phoneNumber;
 	}
 
 	private static String getPassword() {
-		System.out.println("Type your password: (must be at least five characters)");
-		return sc.next();
+		System.out.println("Type your password");
+		String password = sc.next();
+		return password;
 	}
 
 	private static String getEmail() {
 		System.out.println("Type your email");
-		return sc.next();
+		String email = sc.next();
+		return email;
 	}
 
 	private static String getCity() {
-		System.out.println("Type your city");
-		return sc.next();
+		String city = null;
+		while(city==null || city.trim().length()==0) {
+			System.out.println("Type your city");
+			city = sc.next();
+		}
+		return city;
 	}
 
 	private static String getLastName() {
-		System.out.println("Type your last name");
-		return sc.next();
+		String lastName = null;
+		while(lastName==null || lastName.trim().length()==0) {
+			System.out.println("Type your last name");
+			lastName = sc.next();
+		}
+		return lastName;
 	}
 
 	private static String getFirstName() {
-		System.out.println("Type your first name");
-		return sc.next();
+		String firstName = null;
+		while(firstName==null || firstName.trim().length()==0) {
+			System.out.println("Type your first name");
+			firstName = sc.next();
+		}
+		return firstName;
 	}
 
 	private static void showOptionsForClubsDesplay() {
@@ -457,8 +505,6 @@ public class Demo {
 		System.out.println("This is the list of the cities we have restaurants for booking:");
 	}
 
-	// to make a collection containing all cities with Places and iterate it here
-	// showing it to the user.
 	private static void showCities(boolean isRestaurant) {
 		Website w = Website.getWebsite();
 		for (City c : w.getAllCities(null)) {

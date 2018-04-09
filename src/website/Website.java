@@ -51,28 +51,47 @@ public class Website {
 		File cities = new File("JsonFiles" + File.separator + "cities.json");
 		writeToJson(this.allCities, cities);
 	}
-	
+
 	public void clubsToJson() {
 		File clubs = new File("JsonFiles" + File.separator + "clubs.json");
 		writeToJson(this.allClubs, clubs);
 	}
-	
+
 	public void restaurantsToJson() {
 		File restaurants = new File("JsonFiles" + File.separator + "restaurants.json");
 		writeToJson(this.allClubs, restaurants);
 	}
-	
-	public void citiesFromJson() {
-		File file = new File("JsonFiles"+File.separator+"cities.json");
-		
-		try (Reader reader = new FileReader(file);){
-			Gson gson =  new Gson();		
-			JsonElement json = gson.fromJson(reader, JsonElement.class);
-		    String result = gson.toJson(json);
-			
-			Type setType = new TypeToken<HashSet<City>>(){}.getType();
-			this.allCities = gson.fromJson(result, setType);
-			
+
+	public void dataFromJson() {
+		File cities = new File("JsonFiles" + File.separator + "cities.json");
+		File clubs = new File("JsonFiles" + File.separator + "clubs.json");
+		File restaurants = new File("JsonFiles" + File.separator + "restaurants.json");
+		System.out.println("Loading website data...");
+
+		try (Reader citiesReader = new FileReader(cities);
+				Reader clubsReader = new FileReader(clubs);
+				Reader restaurantsReader = new FileReader(restaurants);) {
+			Gson gson = new Gson();
+			JsonElement citiesJson = gson.fromJson(citiesReader, JsonElement.class);
+			JsonElement clubsJson = gson.fromJson(clubsReader, JsonElement.class);
+			JsonElement restaurantsJson = gson.fromJson(restaurantsReader, JsonElement.class);
+			String citiesResult = gson.toJson(citiesJson);
+			String clubsResult = gson.toJson(clubsJson);
+			String restaurantsResult = gson.toJson(restaurantsJson);
+
+			Type setType1 = new TypeToken<HashSet<City>>() {
+			}.getType();
+			Type setType2 = new TypeToken<TreeSet<City>>() {
+			}.getType();
+			if (clubsResult != null && clubsResult.trim().length() > 0) {
+				this.allCities = gson.fromJson(citiesResult, setType1);
+			}
+			if (citiesResult != null && citiesResult.trim().length() > 0) {
+				this.allClubs = gson.fromJson(clubsResult, setType2);
+			}
+			if (restaurantsResult != null && restaurantsResult.trim().length() > 0) {
+				this.allRestaurants = gson.fromJson(restaurantsResult, setType2);
+			}
 		} catch (FileNotFoundException e) {
 			System.out.println("This file does not exist!");
 			e.printStackTrace();
@@ -80,7 +99,32 @@ public class Website {
 			e1.printStackTrace();
 		}
 	}
-	
+
+	public static void usersFromJson() {
+		File file = new File("JsonFiles" + File.separator + "users.json");
+		System.out.println("Loading user data...");
+
+		try (Reader reader = new FileReader(file);) {
+			Gson gson = new Gson();
+			JsonElement json = gson.fromJson(reader, JsonElement.class);
+			String result = gson.toJson(json);
+
+			Type setType = new TypeToken<ArrayList<User>>() {
+			}.getType();
+			if (result != null && result.trim().length() > 0) {
+				UserAdministration.allUsers = gson.fromJson(result, setType);
+			} else {
+				System.out.println("Tuka e problema!!!");
+			}
+
+		} catch (FileNotFoundException e) {
+			System.out.println("This file does not exist!");
+			e.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
 	public static void writeToJson(Collection collection, File file) {
 		try (FileWriter writer = new FileWriter(file);) {
 			GsonBuilder builder = new GsonBuilder();
@@ -254,6 +298,10 @@ public class Website {
 			return this.allCities;
 		else
 			return Collections.unmodifiableSet(allCities);
+	}
+
+	public HashSet<City> getAllCities() {
+		return new HashSet<>(this.allCities);
 	}
 
 }

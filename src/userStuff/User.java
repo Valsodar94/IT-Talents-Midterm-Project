@@ -27,31 +27,15 @@ public class User {
 	private List<Comment> comments;
 	private List<Reservation> pastReservations;
 
-	public User(String firstName, String lastName, String city, String emailAdress, String password, String phoneNumber,
+	protected User(String firstName, String lastName, String city, String emailAdress, String password, String phoneNumber,
 			LocalDate birthday) throws InvalidInformationException {
-		if (checkForValidString(firstName)) {
-			if (checkForValidString(lastName)) {
-				// Da se dobavi kachestvena proverka za city s exception + systoto za birtday
-				if (city != null) {
-					if (UserAdministration.checkForValidEMail(emailAdress)) {
-						if (checkForValidPassword(password)) {
-							if (checkForValidPhoneNumber(phoneNumber)) {
-								if (birthday != null) {
-									this.firstName = firstName;
-									this.lastName = lastName;
-									this.city = city;
-									this.emailAdress = emailAdress;
-									this.password = password;
-									this.birthday = birthday;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		System.out.println("Registration sucessfull!");
-		
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.city = city;
+		this.emailAdress = emailAdress;
+		this.phoneNumber = phoneNumber;
+		this.password = password;
+		this.birthday = birthday;
 		this.myReservations = new ArrayList<>();
 		this.favouritePlaces = new ArrayList<>();
 		this.placesJournal = new ArrayList<>();
@@ -62,8 +46,8 @@ public class User {
 
 	public void changePassword(String newPassword, String oldPassword) {
 		try {
-			if (checkForPasswordMatch(oldPassword)) {
-				if (checkForValidPassword(newPassword))
+			if (UserAdministration.checkForPasswordMatch(oldPassword)) {
+				if (UserAdministration.checkForValidPassword(newPassword))
 					this.password = newPassword;
 			}
 		} catch (InvalidInformationException e) {
@@ -73,7 +57,7 @@ public class User {
 
 	public void changeEMail(String oldPassword, String newEMail) {
 		try {
-			if (checkForPasswordMatch(oldPassword)) {
+			if (UserAdministration.checkForPasswordMatch(oldPassword)) {
 				if (UserAdministration.checkForValidEMail(newEMail))
 					this.emailAdress = newEMail;
 			}
@@ -85,8 +69,8 @@ public class User {
 
 	public void changeFirstName(String firstName, String password) {
 		try {
-			if (checkForPasswordMatch(password)) {
-				if (checkForValidString(firstName)) {
+			if (UserAdministration.checkForPasswordMatch(password)) {
+				if (UserAdministration.checkForValidString(firstName)) {
 					this.firstName = firstName;
 				}
 			}
@@ -97,8 +81,8 @@ public class User {
 
 	public void changeLastName(String lastName, String password) {
 		try {
-			if (checkForPasswordMatch(password)) {
-				if (checkForValidString(lastName)) {
+			if (UserAdministration.checkForPasswordMatch(password)) {
+				if (UserAdministration.checkForValidString(lastName)) {
 					this.firstName = lastName;
 				}
 			}
@@ -109,7 +93,7 @@ public class User {
 
 	public void changeCity(String password, String newCity) {
 		try {
-			if (checkForPasswordMatch(password)) {
+			if (UserAdministration.checkForPasswordMatch(password)) {
 				if (newCity != null) {
 					this.city = newCity;
 				}
@@ -121,8 +105,8 @@ public class User {
 
 	public void changeMobileNumber(String password, String phoneNumber) {
 		try {
-			if (checkForPasswordMatch(password))
-				if (checkForValidPhoneNumber(phoneNumber))
+			if (UserAdministration.checkForPasswordMatch(password))
+				if (UserAdministration.checkForValidPhoneNumber(phoneNumber))
 					this.phoneNumber = phoneNumber;
 		} catch (InvalidInformationException e) {
 			System.out.println("The mobile number was not changed! Reason: " + e.getMessage());
@@ -132,7 +116,7 @@ public class User {
 
 	public void changeBirthday(String password, LocalDate birthday) {
 		try {
-			if (checkForPasswordMatch(password)) {
+			if (UserAdministration.checkForPasswordMatch(password)) {
 				if (birthday != null) {
 					this.birthday = birthday;
 				}
@@ -218,50 +202,6 @@ public class User {
 		}
 	}
 
-	protected static boolean checkForValidPhoneNumber(String phoneNumber) throws InvalidInformationException {
-		if (phoneNumber != null) {
-			if (phoneNumber.trim().length() == 10) {
-				for (int i = 0; i < phoneNumber.length(); i++) {
-					if (!(Character.isDigit(phoneNumber.charAt(i))))
-						throw new InvalidInformationException("Nomera trqbva da se systoi samo ot cifri!");
-					else
-						return true;
-				}
-			} else
-				throw new InvalidInformationException("Nomera trqbva da sydyrza tochno 10 cifri!");
-		} else
-			throw new InvalidInformationException("Podavash null za phonenumber");
-		return false;
-	}
-
-	protected static boolean checkForValidString(String str) throws InvalidInformationException {
-		if ((str != null) && (str.trim().length() > 0))
-			return true;
-		else
-			throw new InvalidInformationException("Podavash null za String ili imash po-malko ot 1 znak");
-	}
-
-	protected boolean checkForPasswordMatch(String password) throws InvalidInformationException {
-		if (password != null) {
-			if (password.equals(this.password))
-				return true;
-			else
-				throw new InvalidInformationException("Parolite ne syvpadat!!");
-		} else {
-			throw new InvalidInformationException("Podavash null za parola..");
-		}
-	}
-
-	protected static boolean checkForValidPassword(String password) throws InvalidInformationException {
-		if (password != null) {
-			if (password.trim().length() > 5)
-				return true;
-			else
-				throw new InvalidInformationException("Dylzhinata na parolata trqbva da e pone 5 znaka");
-		} else
-			throw new InvalidInformationException("Podavash null za parola..");
-	}
-
 	// getters and setters:
 	public String getFirstName() {
 		return firstName;
@@ -325,6 +265,11 @@ public class User {
 
 	protected List<Reservation> getPastReservations() {
 		return this.pastReservations;
+	}
+		
+	@Override
+	public String toString() {
+		return "name: " + this.firstName + " " + this.lastName + ", city: " + this.city + ", phone: " + this.phoneNumber+", e-mail: "+ this.emailAdress;
 	}
 
 }
