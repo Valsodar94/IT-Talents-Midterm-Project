@@ -24,27 +24,46 @@ public abstract class UserAdministration {
 	
 	
 	public static User register(String firstName, String lastName, String city, String emailAdress, String password, String phoneNumber, LocalDate birthday,boolean isAdmin, String adminPass) throws InvalidInformationException {
-		if(isAdmin) {
-			if(UserAdministration.adminPass.equals(adminPass)) {
-				Admin a = new Admin(firstName, lastName, city, emailAdress, password, phoneNumber, birthday);
-				allUsers.add(a);
-				return a;
-			} else
-				throw new InvalidInformationException("Registraciq neuspeshna! greshna parola za admin");
+		if (checkForValidString(firstName)) {
+			if (checkForValidString(lastName)) {
+				if (city != null) {
+					if (UserAdministration.checkForValidEMail(emailAdress)) {
+						if (checkForValidPassword(password)) {
+							if (checkForValidPhoneNumber(phoneNumber)) {
+								if (birthday != null) {
+									if(isAdmin) {
+										if(UserAdministration.adminPass.equals(adminPass)) {
+											System.out.println("Registration successful!");
+											Admin a = new Admin(firstName, lastName, city, emailAdress, password, phoneNumber, birthday);
+											allUsers.add(a);
+											return a;
+										} else
+											throw new InvalidInformationException("Registration unsuccessful. Wrong admin pass");
+									}
+									else {
+										System.out.println("Registration successful!");
+										User u = new User(firstName, lastName, city, emailAdress, password, phoneNumber, birthday);
+										allUsers.add(u);
+										return u;
+									}
+								} else
+									throw new InvalidInformationException("Registration unsuccessful. Null for birthday.");
+							}
+						}
+					}
+				} else
+					throw new InvalidInformationException("Registration unsuccessful. Null for city.");
+			}
 		}
-		else {
-			User u = new User(phoneNumber, phoneNumber, city, phoneNumber, phoneNumber, phoneNumber, birthday);
-			allUsers.add(u);
-			return u;
-		}
+		return null;
 	}
 
-	public static void login(String password, String email) throws InvalidInformationException{
+	public static void login(String email, String password) throws InvalidInformationException{
 		if(!isLogged) {
 			if(password!=null && email!=null) {
 				for(User user: allUsers) {
-					if(currentUser.getEmailAdress().equals(email)) {
-						if(currentUser.getPassword().equals(password)) {
+					if(user.getEmailAdress().equals(email)) {
+						if(user.getPassword().equals(password)) {
 							System.out.println("Login uspeshen");
 							isLogged = true;
 							currentUser = user;
@@ -200,6 +219,51 @@ public abstract class UserAdministration {
 			throw new InvalidInformationException("Missing input...");
 
 	}
+
+	public static boolean checkForValidPhoneNumber(String phoneNumber) throws InvalidInformationException {
+		if (phoneNumber != null) {
+			if (phoneNumber.trim().length() == 10) {
+				for (int i = 0; i < phoneNumber.length(); i++) {
+					if (!(Character.isDigit(phoneNumber.charAt(i))))
+						throw new InvalidInformationException("Nomera trqbva da se systoi samo ot cifri!");
+					else
+						return true;
+				}
+			} else
+				throw new InvalidInformationException("Nomera trqbva da sydyrza tochno 10 cifri!");
+		} else
+			throw new InvalidInformationException("Podavash null za phonenumber");
+		return false;
+	}
+
+	public static boolean checkForValidString(String str) throws InvalidInformationException {
+		if ((str != null) && (str.trim().length() > 0))
+			return true;
+		else
+			throw new InvalidInformationException("Podavash null za String ili imash po-malko ot 1 znak");
+	}
+
+	protected static boolean checkForPasswordMatch(String password) throws InvalidInformationException {
+		if (password != null) {
+			if (password.equals(currentUser.getPassword()))
+				return true;
+			else
+				throw new InvalidInformationException("Parolite ne syvpadat!!");
+		} else {
+			throw new InvalidInformationException("Podavash null za parola..");
+		}
+	}
+
+	public static boolean checkForValidPassword(String password) throws InvalidInformationException {
+		if (password != null) {
+			if (password.trim().length() > 5)
+				return true;
+			else
+				throw new InvalidInformationException("Dylzhinata na parolata trqbva da e pone 5 znaka");
+		} else
+			throw new InvalidInformationException("Podavash null za parola..");
+	}
+
 
 	public static boolean isLogged() {
 		return isLogged;
