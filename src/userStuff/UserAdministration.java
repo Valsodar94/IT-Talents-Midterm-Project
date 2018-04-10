@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
+import Demo.Demo;
 import exceptions.InvalidDateException;
 import exceptions.InvalidInformationException;
 import places.Place;
@@ -28,6 +29,7 @@ public abstract class UserAdministration {
 	public static List<User> allUsers = new ArrayList<>();
 	private static User currentUser;
 	private static String adminPass = "admin";
+	private static Admin admin;
 
 	public static User register(String firstName, String lastName, String city, String emailAdress, String password,
 			String phoneNumber, LocalDate birthday, boolean isAdmin, String adminPass)
@@ -69,7 +71,28 @@ public abstract class UserAdministration {
 		}
 		return null;
 	}
-
+	
+	public static void makeRegistration(){
+		String firstName = getFirstName();
+		String lastName = getLastName();
+		String city = getCity();
+		String emailAdress = getEmail();
+		String password = getPassword();
+		String phoneNumber = getPhoneNumber();
+		LocalDate birthday = getBirthday();
+		boolean isAdmin = isAdmin();
+		String adminPass = null;
+		if (isAdmin)
+			adminPass = getAdminPass();
+		try {
+			UserAdministration.register(firstName, lastName, city, emailAdress, password, phoneNumber, birthday,
+					isAdmin, adminPass);
+		} catch (InvalidInformationException e) {
+			System.out.println("Registration unsuccessful! ");
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	public static void login(String email, String password) throws InvalidInformationException {
 		if (isLogged == false) {
 			if (password != null && email != null) {
@@ -78,7 +101,12 @@ public abstract class UserAdministration {
 						if (user.getPassword().equals(password.trim())) {
 							System.out.println("Login uspeshen");
 							isLogged = true;
-							UserAdministration.currentUser = user;
+							if(user instanceof Admin) {
+								admin = (Admin) user;
+							}
+							else {
+								UserAdministration.currentUser = user;
+							}
 							return;
 						} else {
 							throw new InvalidInformationException("Login neuspeshen! Nepravilna parola!");
@@ -183,6 +211,28 @@ public abstract class UserAdministration {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void getReservationDetailsAndMakeReservation() {
+		Place place = getPlaceIfExists();
+		if (place == null)
+			return;
+		int nmbOfChildren = 0;
+		if (place.isRestaurant())
+			System.out.println("Enter the number of children for the reservation");
+		nmbOfChildren = getNumberOfPeople();
+		LocalDateTime dateAndTimeOfReservation = getDateTime();
+		System.out.println("Enter the number of people for the reservation");
+		int nmbOfPeople = getNumberOfPeople();
+		String locationPref = pickLocationPref(place);
+		makeReservation(place, nmbOfChildren, nmbOfPeople, dateAndTimeOfReservation, locationPref);
+	}
+
+	private static void makeReservation(Place place, int nmbOfChildren, int nmbOfPeople,
+			LocalDateTime dateAndTimeOfReservation, String locationPref) {
+		UserAdministration.makeReservation(dateAndTimeOfReservation, nmbOfPeople, nmbOfChildren, locationPref,
+				UserAdministration.getU(), place);
+
+	}
 
 	public static void usersToJson() {
 		File users = new File("JsonFiles" + File.separator + "users.json");
@@ -213,6 +263,17 @@ public abstract class UserAdministration {
 			e1.printStackTrace();
 		}
 	}
+	public static void logIn(){
+		System.out.println("Enter your email: ");
+		String email = Demo.sc.next();
+		System.out.println("Enter your password: ");
+		String password = Demo.sc.next();
+		try {
+			UserAdministration.login(email, password);
+		} catch (InvalidInformationException e) {
+			System.out.println(e.getMessage());
+		}
+	}
 
 	public static void logout() {
 
@@ -234,7 +295,11 @@ public abstract class UserAdministration {
 			}
 		}
 	}
-
+	
+	public static void deleteProfile() {
+		String password = getPassword();
+		deleteUser(password);
+	}
 	public static void getAllUsers() {
 		System.out.println(UserAdministration.allUsers);
 	}
@@ -305,5 +370,137 @@ public abstract class UserAdministration {
 
 	public static User getU() {
 		return currentUser;
+	}
+	public static String getPhoneNumber() {
+		System.out.println("Type your phoneNumber");
+		String phoneNumber = Demo.sc.next();
+		return phoneNumber;
+	}
+
+	public static String getPassword() {
+		System.out.println("Type your password");
+		String password = Demo.sc.next();
+		return password;
+	}
+
+	public static String getEmail() {
+		System.out.println("Type your email");
+		String email = Demo.sc.next();
+		return email;
+	}
+
+	public static String getCity() {
+		String city = null;
+		while(city==null || city.trim().length()==0) {
+			System.out.println("Type your city");
+			city = Demo.sc.next();
+		}
+		return city;
+	}
+
+	public static String getLastName() {
+		String lastName = null;
+		while(lastName==null || lastName.trim().length()==0) {
+			System.out.println("Type your last name");
+			lastName = Demo.sc.next();
+		}
+		return lastName;
+	}
+
+	public static String getFirstName() {
+		String firstName = null;
+		while(firstName==null || firstName.trim().length()==0) {
+			System.out.println("Type your first name");
+			firstName = Demo.sc.next();
+		}
+		return firstName;
+	}
+	
+
+
+	private static String getAdminPass() {
+		System.out.println("Type the admin password:");
+		String adminPassword = Demo.sc.next();
+		return adminPassword;
+	}
+
+	private static boolean isAdmin() {
+		System.out.println("Are you going to be an admin(Required admin password for this)");
+		System.out.println("Type yes or no");
+		String answer = Demo.sc.next();
+		if (answer.equalsIgnoreCase("yes"))
+			return true;
+		else
+			return false;
+	}
+
+	public static LocalDate getBirthday() {
+		System.out.println("Enter you birth date.");
+		int day = 0;
+		while(day <1||day>31) {
+			System.out.println("Day: ");
+			day = Demo.sc.nextInt();
+		}
+		int month = 0;
+		while(month<1||month>12) {
+			System.out.println("Month: ");
+			month = Demo.sc.nextInt();
+		}
+		int year = -1;
+		while(year < 0) {
+			System.out.println("Year: ");
+			year = Demo.sc.nextInt();
+		}
+		return LocalDate.of(year, month, day);
+	}
+	private static int getNumberOfPeople() {
+		return Demo.sc.nextInt();
+	}
+	private static Place getPlaceIfExists() {
+		String placeName = getPlaceName();
+		for (Place p : Website.getWebsite().getAllRestaurants(UserAdministration.getU())) {
+			if (p.getName().equals(placeName)) {
+				return p;
+			}
+		}
+		for (Place p : Website.getWebsite().getAllClubs(UserAdministration.getU())) {
+			if (p.getName().equals(placeName)) {
+				return p;
+			}
+		}
+		System.out.println("There is no place with such name in our system. Please check the name and try again!");
+		return null;
+	}
+
+	private static String getPlaceName() {
+		System.out.println("Please enter the name of the restaurant or club you want to reserve in: ");
+		return Demo.sc.next();
+	}
+	private static LocalDateTime getDateTime() {
+		System.out.println("Enter the month of the reservation: ");
+		int month = Demo.sc.nextInt();
+		System.out.println("Enter the day of the reservation: ");
+		int day = Demo.sc.nextInt();
+		System.out.println("Enter hour of reservation: ");
+		int hour = Demo.sc.nextInt();
+		return LocalDateTime.of(2018, month, day, hour, 0);
+
+	}
+	private static String pickLocationPref(Place p) {
+		showLocationPrefOptions(p);
+		System.out.println("Type the name of the option you want");
+		String locationPref = Demo.sc.next();
+		for (String s : p.getLocationPrefs()) {
+			if (locationPref.equals(s))
+				return locationPref;
+		}
+		System.out.println("This option for location pref doesn't exist. A random location pref is chosen for you.");
+		return p.getLocationPrefs().get((int) (Math.random() * p.getLocationPrefs().size()));
+	}
+	private static void showLocationPrefOptions(Place p) {
+		System.out.println("This are the location options you have for this place: ");
+		for (String s : p.getLocationPrefs()) {
+			System.out.println(s);
+		}
 	}
 }

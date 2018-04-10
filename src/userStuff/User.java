@@ -1,16 +1,15 @@
 package userStuff;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import exceptions.InvalidDateException;
+
+import Demo.Demo;
 import exceptions.InvalidInformationException;
 import places.Place;
 import services.Comment;
 import services.Reservation;
-import website.Website;
 
 public class User {
 	private String firstName;
@@ -144,7 +143,6 @@ public class User {
 		}
 	}
 
-	// za otkazvane na rezervaciq
 	public void cancelReservation(String reservationID) throws InvalidInformationException {
 		if (reservationID != null && myReservations.size()>0) {
 			Iterator<Reservation> it = myReservations.iterator();
@@ -162,7 +160,31 @@ public class User {
 			throw new InvalidInformationException("Not existing reservation!");
 		}
 	}
-
+	
+	public void cancelReservation() {
+		System.out.println("Enter the reservationId of the reservation you want to cancel");
+		String reservationID = Demo.sc.next();
+		User u = UserAdministration.getU();
+		try {
+			u.cancelReservation(reservationID);
+		} catch (InvalidInformationException e) {
+			System.out.println("No such reservation.");
+		}
+	}
+	public void leaveAComment(){
+		System.out.println("Enter the reservation id of the reservation you want to comment");
+		String reservationID = Demo.sc.next();
+		System.out.println("Enter your comment for the place: ");
+		String comment = Demo.sc.nextLine();
+		System.out.println("Now enter your rating (1-6).");
+		int rating = Demo.sc.nextInt();
+		try {
+			leaveComment(reservationID, comment, rating);
+		} catch (InvalidInformationException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	public void leaveComment(String reservationId, String description, int rating) throws InvalidInformationException {
 		if (reservationId != null && description != null && rating > 0 && rating < 6) {
 			if(myReservations.size()>0) {
@@ -208,9 +230,7 @@ public class User {
 		return firstName;
 	}
 
-	private void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+
 	
 	public boolean isAdmin() {
 		return this.isAdmin;
@@ -225,25 +245,17 @@ public class User {
 		return lastName;
 	}
 
-	private void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+	
 
 	public String getCity() {
 		return city;
 	}
 
-	private void setCity(String city) {
-		this.city = city;
-	}
 
 	public String getEmailAdress() {
 		return emailAdress.trim();
 	}
 
-	private void setEmailAdress(String emailAdress) {
-		this.emailAdress = emailAdress;
-	}
 
 	public String getPhoneNumber() {
 		return phoneNumber;

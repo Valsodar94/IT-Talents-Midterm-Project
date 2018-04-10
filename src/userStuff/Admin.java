@@ -23,9 +23,7 @@ public class Admin extends User{
 			if(p.isRestaurant()) {
 				if(!(Website.getWebsite().getAllRestaurants(this).contains(p))) {
 					System.out.println("The restaurant has been added.");
-					Website.getWebsite().appendPlace(p);
-					//.getAllRestaurants(this).add(p);
-					System.out.println(Website.getWebsite().getAllRestaurants());
+					Website.getWebsite().getAllRestaurants(this).add(p);;
 					addPlaceCityIfNotPresent(p.getCity());
 					addRestaurantInCityRestaurants(p);
 				}
@@ -196,4 +194,5 @@ public class Admin extends User{
 			}
 		}
 	}
+
 }

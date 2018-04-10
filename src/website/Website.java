@@ -221,9 +221,6 @@ public class Website {
 		}
 	}
 
-	// nujni sa systite metodi za clubs i restaurants. Otdelno trqbva da se napravi
-	// po oste 1 overload method za nachin na sortirane(default da byde po reiting)
-
 	public String getInfoForTheWebstie() {
 		return infoForTheWebstie;
 	}
@@ -258,28 +255,14 @@ public class Website {
 	}
 
 	public Set<Place> getAllRestaurants(User u) {
-		if (u.isAdmin())
-			return this.allRestaurants;
-		else
-			return new TreeSet<>(allRestaurants);
-	}
-
-	public void appendPlace(Place p) {
-
-		if (p != null) {
-			if (p.isRestaurant()) {
-				this.allRestaurants.add(p);
-				System.out.println(allRestaurants);
-			} else {
-				this.allClubs.add(p);
+		if(u!=null) {
+			if (u.isAdmin()) {
+				return this.allRestaurants;
 			}
 		}
-
+		return new TreeSet<>(allRestaurants);	
 	}
 
-	public TreeSet<Place> getAllRestaurants() {
-		 return new TreeSet<>(allRestaurants);
-	}
 
 	public Set<Place> getAllClubs(User u) {
 		if (u instanceof Admin)
@@ -291,7 +274,9 @@ public class Website {
 	public ArrayList<Place> getAllClubs() {
 		return new ArrayList<>(allClubs);
 	}
-
+	public ArrayList<Place> getAllRestaurants() {
+		return new ArrayList<>(allRestaurants);
+	}
 	public Set<Event> getAllEvents(User u) {
 		if (u instanceof Admin)
 			return this.allEvents;
